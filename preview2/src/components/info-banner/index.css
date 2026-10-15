@@ -1,0 +1,43 @@
+.info-banner {
+  border-radius: var(--radius-base);
+  padding: 0.625rem 1rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  font: var(--font-body-s);
+  color: var(--on-surface);
+}
+
+.info-banner.info {
+  background: var(--info-container);
+  border: 1px solid var(--primary);
+  border-color: rgba(0, 103, 209, 0.25);
+}
+
+.info-banner.warning {
+  background: var(--critical-container);
+  border: 1px solid rgba(244, 132, 12, 0.3);
+}
+
+.info-banner-icon {
+  flex-shrink: 0;
+  margin-top: 1px;
+  display: flex;
+  align-items: center;
+}
+
+.info-banner-text {
+  flex: 1 1 auto;
+  line-height: 1.5;
+}
+
+.info-banner-text a {
+  color: var(--interactive-link);
+  text-decoration: underline;
+  margin-left: 0.25rem;
+  cursor: pointer;
+}
+
+.info-banner-text a:hover {
+  color: var(--interactive-link-hover);
+}

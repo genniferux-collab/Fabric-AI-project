@@ -1,0 +1,8 @@
+.region-config {
+  display: flex;
+  flex-direction: column;
+}
+
+.rc-banner-area {
+  margin-bottom: 1.25rem;
+}

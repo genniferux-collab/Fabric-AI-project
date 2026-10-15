@@ -1,0 +1,144 @@
+.app-root {
+  min-height: 100vh;
+  background: var(--surface-container-lowest);
+  color: var(--on-surface);
+  font: var(--font-body-m);
+  display: flex;
+  flex-direction: column;
+}
+
+.app-main {
+  flex: 1 1 0;
+  padding: 1rem 2rem 5rem;
+}
+
+.app-card {
+  background: var(--surface-container-highest);
+  border-radius: var(--radius-container);
+  box-shadow: var(--shadow-card);
+  padding: 1.5rem;
+}
+
+.app-breadcrumb-bar {
+  background: var(--surface-container-lowest);
+  padding: 0.5rem 2rem;
+}
+
+/* ===== Shared form layout (H5 skeleton, no Form/Form.Item) ===== */
+.form-row {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.form-row:last-child {
+  margin-bottom: 0;
+}
+
+.form-label {
+  min-width: 7.5rem;
+  max-width: 7.5rem;
+  text-align: left;
+  flex-shrink: 0;
+  font: var(--font-body-s);
+  color: var(--on-surface-variant);
+  position: relative;
+  padding-right: 0.75rem;
+}
+
+.form-label.required::before {
+  content: "*";
+  position: absolute;
+  left: -0.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--error);
+  font: var(--font-body-m);
+}
+
+.form-label.narrow {
+  min-width: 6.25rem;
+  max-width: 6.25rem;
+}
+
+.form-label.wide {
+  min-width: 8.75rem;
+  max-width: 8.75rem;
+}
+
+.form-subsection {
+  background: var(--surface-variant);
+  border-radius: var(--radius-base);
+  padding: 1rem 1.25rem;
+  margin-bottom: 1rem;
+}
+
+.form-subsection:last-child {
+  margin-bottom: 0;
+}
+
+.form-subsection-row {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+.form-subsection-item {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.cell-link {
+  color: var(--interactive-link);
+  cursor: pointer;
+  font: var(--font-body-s);
+}
+
+.cell-link:hover {
+  color: var(--interactive-link-hover);
+}
+
+/* Fixed-width text buttons (88px) */
+.app-root .ant-btn:not(.ant-btn-icon-only),
+.ant-modal-footer .ant-btn {
+  width: 88px;
+}
+
+.custom-spin-indicator {
+  animation: custom-spin 1s linear infinite;
+}
+
+@keyframes custom-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ===== Breadcrumb ===== */
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.breadcrumb-item-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.breadcrumb-item {
+  font: var(--font-body-s);
+  color: var(--on-surface-variant);
+}
+
+.breadcrumb-item.current {
+  color: var(--on-surface);
+  font-weight: var(--font-weight-medium);
+}
+
+.breadcrumb-sep {
+  color: var(--outline);
+  font: var(--font-body-s);
+}
