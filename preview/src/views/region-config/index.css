@@ -6,3 +6,15 @@
 .rc-banner-area {
   margin-bottom: 1.25rem;
 }
+
+.ip-range-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.ip-range-dash {
+  color: var(--text-placeholder);
+  font: var(--font-body-m);
+  user-select: none;
+}
