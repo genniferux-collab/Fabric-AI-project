@@ -1,44 +1,31 @@
 import { ConfigProvider, Empty, Button } from "antd";
 import zhCN from "./assets/shared/antd-zh.js";
 import { AppProvider, useApp } from "./src/context.jsx";
-import { breadcrumbItems } from "./src/mock/network.js";
 import TopNav from "./src/components/top-nav/index.jsx";
-import WizardStepper from "./src/components/wizard-stepper/index.jsx";
+import SecondaryNav from "./src/components/secondary-nav/index.jsx";
 import FooterBar from "./src/components/footer-bar/index.jsx";
 import NetworkPlanning from "./src/views/network-planning/index.jsx";
 import RegionConfig from "./src/views/region-config/index.jsx";
+import DeviceOnboarding from "./src/views/device-onboarding/index.jsx";
 import "./app.css";
-
-function Breadcrumb() {
-  return (
-    <div className="app-breadcrumb-bar">
-      <div className="breadcrumb">
-        {breadcrumbItems.map((item, i) => (
-          <span key={item} className="breadcrumb-item-wrap">
-            {i > 0 && <span className="breadcrumb-sep">/</span>}
-            <span
-              className={
-                "breadcrumb-item" +
-                (i === breadcrumbItems.length - 1 ? " current" : "")
-              }
-            >
-              {item}
-            </span>
-          </span>
-        ))}
-      </div>
-    </div>
-  );
-}
 
 function PageContent() {
   const { currentStep, goNext, goPrev } = useApp();
 
+  if (currentStep >= 3) {
+    return (
+      <>
+        <SecondaryNav />
+        <DeviceOnboarding />
+      </>
+    );
+  }
+
   return (
     <>
+      <SecondaryNav />
       <main className="app-main">
         <div className="app-card">
-          <WizardStepper />
           {currentStep === 1 && <NetworkPlanning />}
           {currentStep === 2 && <RegionConfig />}
         </div>
@@ -81,7 +68,6 @@ export default function App() {
       >
         <div className="app-root">
           <TopNav />
-          <Breadcrumb />
           <PageContent />
         </div>
       </ConfigProvider>

@@ -19,11 +19,6 @@
   padding: 1.5rem;
 }
 
-.app-breadcrumb-bar {
-  background: var(--surface-container-lowest);
-  padding: 0.5rem 2rem;
-}
-
 /* ===== Shared form layout (H5 skeleton, no Form/Form.Item) ===== */
 .form-row {
   display: flex;
@@ -115,30 +110,3 @@
   to { transform: rotate(360deg); }
 }
 
-/* ===== Breadcrumb ===== */
-.breadcrumb {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.breadcrumb-item-wrap {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.breadcrumb-item {
-  font: var(--font-body-s);
-  color: var(--on-surface-variant);
-}
-
-.breadcrumb-item.current {
-  color: var(--on-surface);
-  font-weight: var(--font-weight-medium);
-}
-
-.breadcrumb-sep {
-  color: var(--outline);
-  font: var(--font-body-s);
-}

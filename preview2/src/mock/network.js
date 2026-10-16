@@ -1,7 +1,5 @@
 export const navItems = ["概览", "部署", "资源池", "物理资源", "对接"];
 
-export const breadcrumbItems = ["网络规建", "部署", "全新开局", "极简开局"];
-
 export const wizardSteps = [
   { title: "网络规划" },
   { title: "区域配置" },
