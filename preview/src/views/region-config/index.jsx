@@ -8,7 +8,7 @@ import {
 } from "antd";
 import InfoBanner from "../../components/info-banner/index.jsx";
 import CollapseSection from "../../components/collapse-section/index.jsx";
-import IpInput from "../../../assets/shared/ip-input.jsx";
+import IpInput from "../../components/ip-input/index.jsx";
 import {
   fabricMgmtOptions,
   networkTypeOptions,
@@ -70,15 +70,11 @@ export default function RegionConfig() {
             </div>
             <div className="form-subsection-item">
               <label className="form-label wide required">IP地址（源-目的）</label>
-              <div className="ip-range-group">
-                <IpInput value="192.168.1.1" />
-                <span className="ip-range-dash">—</span>
-                <IpInput value="192.168.1.1" />
-              </div>
+              <IpInput withRange defaultSegments={["192", "168", "1", "1"]} />
             </div>
             <div className="form-subsection-item">
               <label className="form-label narrow required">默认网关</label>
-              <IpInput value="192.168.1.1" />
+              <IpInput defaultSegments={["192", "168", "1", "1"]} />
             </div>
           </div>
         </div>
@@ -159,7 +155,7 @@ export default function RegionConfig() {
         </div>
         <div className="form-row">
           <label className="form-label required">OSPF区域ID</label>
-          <IpInput value="0.0.0.0" />
+          <IpInput defaultSegments={["0", "0", "0", "0"]} />
         </div>
         <div className="form-row">
           <label className="form-label required">Overlay IBGP AS号</label>
