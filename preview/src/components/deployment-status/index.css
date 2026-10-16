@@ -5,10 +5,14 @@
   margin-bottom: 0.75rem;
 }
 
-/* "更多" toggle link on its own line, right-aligned */
+/* Banner links (在线帮助 / 更多) have no underline */
+.deployment-status .info-banner-text a {
+  text-decoration: none;
+}
+
+/* "更多" toggle link on its own line, left-aligned */
 .dep-more-link {
   display: block;
-  text-align: right;
   margin-top: 0.25rem;
 }
 
@@ -67,7 +71,7 @@
   color: var(--on-surface-variant);
 }
 
-/* Stat triplets: 20px numbers + 16px (r=8) status dots */
+/* Stat triplets: 20px numbers + 8×8 status dots */
 .dep-stats {
   display: flex;
   align-items: center;
@@ -95,8 +99,8 @@
 }
 
 .dep-dot {
-  width: 16px;
-  height: 16px;
+  width: 8px;
+  height: 8px;
   border-radius: var(--radius-full);
   flex-shrink: 0;
 }
@@ -163,4 +167,9 @@
   overflow: hidden;
   text-overflow: ellipsis;
   text-align: center;
+}
+
+/* Last 3 stage labels in light grey (not yet reached) */
+.dep-step-label.pending {
+  color: var(--text-disabled);
 }

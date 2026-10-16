@@ -10,8 +10,8 @@ const deployStages = [
   "部署完成",
 ];
 
-/* 36% overall progress => stage 1 done, stage 2 in progress */
-const DONE_STAGE_COUNT = 2;
+/* Only the first stage bar is active */
+const DONE_STAGE_COUNT = 1;
 
 export default function DeploymentStatus() {
   const [showMore, setShowMore] = useState(false);
@@ -82,7 +82,10 @@ export default function DeploymentStatus() {
                   "dep-step-bar" + (i < DONE_STAGE_COUNT ? " done" : "")
                 }
               />
-              <div className="dep-step-label" title={label}>
+              <div
+                className={"dep-step-label" + (i >= 2 ? " pending" : "")}
+                title={label}
+              >
                 {label}
               </div>
             </div>
