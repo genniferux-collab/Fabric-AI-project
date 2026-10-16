@@ -6,7 +6,7 @@ import SecondaryNav from "./src/components/secondary-nav/index.jsx";
 import FooterBar from "./src/components/footer-bar/index.jsx";
 import NetworkPlanning from "./src/views/network-planning/index.jsx";
 import RegionConfig from "./src/views/region-config/index.jsx";
-import DeviceOnboarding from "./src/views/device-onboarding/index.jsx";
+import DeviceSelection from "./src/views/device-selection/index.jsx";
 import "./app.css";
 
 function PageContent() {
@@ -16,7 +16,7 @@ function PageContent() {
     return (
       <>
         <SecondaryNav />
-        <DeviceOnboarding />
+        <DeviceSelection deployMode={currentStep === 4} />
       </>
     );
   }
