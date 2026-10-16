@@ -7,19 +7,36 @@ export default function DynamicInputRow({
   initialValues = [],
   placeholder = "",
   width = "17.5rem",
+  onChange,
+  label,
 }) {
   const [values, setValues] = useState(
     initialValues.length > 0 ? [...initialValues] : [""]
   );
 
-  const addRow = () => setValues((v) => [...v, ""]);
-  const removeRow = (idx) =>
-    setValues((v) => (v.length > 1 ? v.filter((_, i) => i !== idx) : v));
-  const updateRow = (idx, val) =>
-    setValues((v) => v.map((x, i) => (i === idx ? val : x)));
+  const emit = (next) => {
+    if (onChange) onChange(next);
+  };
+  const addRow = () => {
+    const next = [...values, ""];
+    setValues(next);
+    emit(next);
+  };
+  const removeRow = (idx) => {
+    if (values.length <= 1) return;
+    const next = values.filter((_, i) => i !== idx);
+    setValues(next);
+    emit(next);
+  };
+  const updateRow = (idx, val) => {
+    const next = values.map((x, i) => (i === idx ? val : x));
+    setValues(next);
+    emit(next);
+  };
 
   return (
     <div className="esn-row">
+      {label}
       {values.map((val, idx) => (
         <div className="esn-input-group" key={idx}>
           <Input

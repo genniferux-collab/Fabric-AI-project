@@ -1,43 +1,22 @@
-import { Icon } from "../../../assets/shared/icon.jsx";
+import { Steps } from "antd";
 import { wizardSteps } from "../../mock/network.js";
 import { useApp } from "../../context.jsx";
 import "./index.css";
 
 export default function WizardStepper() {
-  const { currentStep } = useApp();
-
+  const { currentStep, setCurrentStep } = useApp();
   return (
-    <div className="stepper">
-      {wizardSteps.map((step, idx) => {
-        const stepNum = idx + 1;
-        const isDone = stepNum < currentStep;
-        const isActive = stepNum === currentStep;
-        const stateClass = isDone
-          ? " done"
-          : isActive
-          ? " active"
-          : " inactive";
-
-        return (
-          <div className="step-item" key={step.title}>
-            {idx > 0 && (
-              <div
-                className={
-                  "step-connector" + (stepNum <= currentStep ? " done" : "")
-                }
-              />
-            )}
-            <div className={"step-circle" + stateClass}>
-              {isDone ? (
-                <Icon name="check" size="0.75rem" color="var(--success)" strokeWidth={3} />
-              ) : (
-                stepNum
-              )}
-            </div>
-            <span className={"step-label" + stateClass}>{step.title}</span>
-          </div>
-        );
-      })}
-    </div>
+    <Steps
+      className="wizard-steps"
+      size="small"
+      current={currentStep - 1}
+      onChange={(idx) => {
+        // 仅允许点击返回到已完成的步骤；向前推进走底部"下一步"按钮
+        if (idx < currentStep - 1) {
+          setCurrentStep(idx + 1);
+        }
+      }}
+      items={wizardSteps}
+    />
   );
 }

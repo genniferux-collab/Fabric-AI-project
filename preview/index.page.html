@@ -2760,7 +2760,7 @@ input.ant-input.ant-input-sm {
   color: var(--color-link);
 }
 .ant-steps .ant-steps-item.ant-steps-item-process .ant-steps-item-container .ant-steps-item-content .ant-steps-item-title::after {
-  background-color: var(--color-border-separator);
+  background-color: var(--color-border);
 }
 .ant-steps .ant-steps-item.ant-steps-item-process .ant-steps-item-container .ant-steps-item-tail::after {
   background-color: var(--color-border-separator);
@@ -2777,7 +2777,7 @@ input.ant-input.ant-input-sm {
   color: var(--color-text-secondary);
 }
 .ant-steps .ant-steps-item.ant-steps-item-wait .ant-steps-item-container .ant-steps-item-content .ant-steps-item-title::after {
-  background-color: var(--color-border-separator);
+  background-color: var(--color-border);
 }
 .ant-steps .ant-steps-item.ant-steps-item-wait .ant-steps-item-container .ant-steps-item-content .ant-steps-item-description {
   color: var(--color-text-secondary);
@@ -2796,6 +2796,9 @@ input.ant-input.ant-input-sm {
   border-color: var(--color-border-focus);
   background-color: var(--color-info-primary-subtler);
   color: var(--color-border-focus);
+}
+.ant-steps .ant-steps-item.ant-steps-item-finish .ant-steps-item-container .ant-steps-item-content .ant-steps-item-title::after {
+  background-color: var(--color-brand);
 }
 .ant-steps .ant-steps-item .ant-steps-item-description {
   font-size: var(--font-size-md);
@@ -3937,12 +3940,17 @@ input.ant-input.ant-input-sm {
 .form-row {
   display: flex;
   align-items: center;
-  gap: 1.5rem;
-  margin-bottom: 1rem;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
 }
 
 .form-row:last-child {
   margin-bottom: 0;
+}
+
+/* 表项紧邻下方子区块(参数组)时紧凑成组 8px；其余表项之间保持较宽间距 */
+.form-row:has(+ .form-subsection) {
+  margin-bottom: 0.5rem;
 }
 
 .form-label {
@@ -3967,8 +3975,8 @@ input.ant-input.ant-input-sm {
 }
 
 .form-label.narrow {
-  min-width: 6.25rem;
-  max-width: 6.25rem;
+  min-width: 5rem;
+  max-width: 5rem;
 }
 
 .form-label.wide {
@@ -3977,10 +3985,10 @@ input.ant-input.ant-input-sm {
 }
 
 .form-subsection {
-  background: var(--surface-variant);
+  background: rgb(from var(--gray-40) r g b / 0.05);
   border-radius: var(--radius-base);
   padding: 1rem 1.25rem;
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
 }
 
 .form-subsection:last-child {
@@ -3990,14 +3998,14 @@ input.ant-input.ant-input-sm {
 .form-subsection-row {
   display: flex;
   align-items: center;
-  gap: 2rem;
+  gap: 2.5rem;
   flex-wrap: wrap;
 }
 
 .form-subsection-item {
   display: flex;
   align-items: center;
-  gap: 1.5rem;
+  gap: 1rem;
 }
 
 .cell-link {
@@ -4183,78 +4191,27 @@ input.ant-input.ant-input-sm {
 }
 
 
-.stepper {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+/* WizardStepper — antd Steps 标准步骤条（状态/尺寸/暗色皮肤由 ant.css 统一提供） */
+.wizard-steps {
+  /* 次级导航是居中 flex 容器，会把 Steps 根宽度塌成内容宽，
+     item 间无富余空间 → 连接线(title::after)跨距为 0 而消失。
+     给定明确宽度让 item 撑开、连接线显形。 */
+  width: 44rem;
 }
 
-.step-item {
-  display: flex;
-  align-items: center;
+/* 圆形与内部数字/勾选：用 flexbox 真正几何居中，
+   替代 antd 默认的 line-height+text-align+top:-0.5px 微调方案
+   （后者按基线落位，数字会随字体度量偏上/偏下，非真正居中）。 */
+.wizard-steps .ant-steps-item-icon {
+  display: inline-flex;
+  align-items: center !important;
+  justify-content: center !important;
+  line-height: 1 !important;
 }
-
-.step-circle {
-  width: 1.5rem;
-  height: 1.5rem;
-  border-radius: var(--radius-full);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font: var(--font-body-s);
-  font-weight: var(--font-weight-medium);
-  flex-shrink: 0;
-  margin-left: 1rem;
-}
-
-.step-item:first-child .step-circle {
-  margin-left: 0;
-}
-
-.step-circle.active {
-  background: var(--primary);
-  color: var(--on-primary);
-}
-
-.step-circle.done {
-  background: var(--success-container);
-  color: var(--success);
-  border: 1px solid var(--success);
-}
-
-.step-circle.inactive {
-  background: var(--surface-variant);
-  color: var(--text-disabled);
-  border: 1px solid var(--outline);
-}
-
-.step-label {
-  margin-left: 0.5rem;
-  font: var(--font-body-m);
-}
-
-.step-label.active {
-  color: var(--primary);
-  font-weight: var(--font-weight-medium);
-}
-
-.step-label.done {
-  color: var(--success);
-}
-
-.step-label.inactive {
-  color: var(--text-disabled);
-}
-
-.step-connector {
-  width: 5rem;
-  height: 1px;
-  background: var(--divider);
-  margin: 0 1rem;
-}
-
-.step-connector.done {
-  background: var(--success);
+.wizard-steps .ant-steps-item-icon > .ant-steps-icon {
+  position: static !important;
+  top: 0 !important;
+  line-height: 1 !important;
 }
 
 
@@ -4391,7 +4348,7 @@ input.ant-input.ant-input-sm {
 
 .info-banner {
   border-radius: var(--radius-base);
-  padding: 0.625rem 1rem;
+  padding: 0.75rem 1rem;
   display: flex;
   align-items: flex-start;
   gap: 0.5rem;
@@ -4445,7 +4402,7 @@ input.ant-input.ant-input-sm {
   gap: 0.25rem;
   cursor: pointer;
   user-select: none;
-  margin-bottom: 1rem;
+  margin-bottom: 0;
   padding: 0.25rem 0;
 }
 
@@ -4466,15 +4423,27 @@ input.ant-input.ant-input-sm {
 }
 
 .collapse-body {
+  margin-top: 1rem;
   padding-left: 0.25rem;
 }
 
 
 .esn-row {
   display: flex;
-  align-items: flex-start;
-  gap: 1.5rem;
+  align-items: center;
+  gap: 1rem;
   flex-wrap: wrap;
+  /* 作为 form-row 的唯一子项时填满宽度，使内部输入项能按需折行 */
+  flex: 1 1 0;
+  min-width: 0;
+  /* 悬挂缩进：标签宽度(7.5rem)+gap(1rem)=8.5rem，与同节其他 form-row 内容列对齐；
+     折行后第二排也从 input1 左边缘开始 */
+  padding-left: 8.5rem;
+}
+
+/* 把标签拉回到容器最左（抵消 padding-left），仅第一行生效；第二排受 padding-left 约束对齐 input1 */
+.esn-row > .form-label {
+  margin-left: -8.5rem;
 }
 
 .esn-input-group {
@@ -4494,7 +4463,7 @@ input.ant-input.ant-input-sm {
   justify-content: center;
   flex-shrink: 0;
   background: transparent;
-  padding: 0.1875rem;
+  padding: 0.25rem;
   transition: opacity 0.15s;
 }
 
@@ -4593,40 +4562,25 @@ input.ant-input.ant-input-sm {
   margin-bottom: 1.25rem;
 }
 
+/* 基础配置：表项标签收到 6.25rem(=子区块 padding1.25+narrow5 的有效宽)，
+   使 form-row 的内容(Segmented/Switch 等)与下方子区块输入框左对齐(同在 176px 列)，
+   并收窄标签到内容的间距。最长标签"配置stelnet账户"85px，100px 装得下。 */
+.section-basic .form-row > .form-label {
+  min-width: 6.25rem;
+  max-width: 6.25rem;
+}
 
-.ip-input-group {
-  display: flex;
+/* IP地址（源-目的）：两个内置 IpInput + 分隔符 */
+.ip-range-group {
+  display: inline-flex;
   align-items: center;
   gap: 0.5rem;
 }
 
-.ip-segment-group {
-  display: flex;
-  align-items: center;
-}
-
-.ip-segment-wrap {
-  display: inline-flex;
-  align-items: center;
-}
-
-.ip-segment-input {
-  width: 3rem !important;
-  text-align: center;
-}
-
-.ip-dot {
+.ip-range-dash {
   color: var(--text-placeholder);
-  font-size: 1rem;
+  font: var(--font-body-m);
   user-select: none;
-  margin: 0 0.125rem;
-}
-
-.ip-dash {
-  color: var(--text-placeholder);
-  font-size: 1rem;
-  user-select: none;
-  margin: 0 0.25rem;
 }
 
 
@@ -4701,8 +4655,9 @@ input.ant-input.ant-input-sm {
   flex: 0 0 auto;
   min-height: 0;
   overflow: hidden;
-  /* top rule only: no left/right/bottom borders */
-  border-top: 1px solid var(--outline-variant);
+  /* 四边外边框，与规范表格一致（含左右外边框） */
+  border: 1px solid var(--outline-variant);
+  border-radius: var(--radius-base);
 }
 
 /* Spacing fully controlled by the custom empty block */
@@ -5367,7 +5322,6 @@ function useApp() {
   const LUCIDE = {
     "arrow-left": [["path",{"d":"m12 19-7-7 7-7"}],["path",{"d":"M19 12H5"}]],
     "bell": [["path",{"d":"M10.268 21a2 2 0 0 0 3.464 0"}],["path",{"d":"M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"}]],
-    "check": [["path",{"d":"M20 6 9 17l-5-5"}]],
     "chevron-down": [["path",{"d":"m6 9 6 6 6-6"}]],
     "chevron-right": [["path",{"d":"m9 18 6-6-6-6"}]],
     "circle-alert": [["circle",{"cx":"12","cy":"12","r":"10"}],["line",{"x1":"12","x2":"12","y1":"8","y2":"12"}],["line",{"x1":"12","x2":"12.01","y1":"16","y2":"16"}]],
@@ -6108,43 +6062,23 @@ function TopNav() {
 
 /* ===== src/components/wizard-stepper/index.jsx ===== */
 (function () {
-  const { Icon, wizardSteps, useApp } = __export;
+  const { Steps } = antd;
+  const { wizardSteps, useApp } = __export;
 function WizardStepper() {
-  const { currentStep } = useApp();
-
+  const { currentStep, setCurrentStep } = useApp();
   return (
-    <div className="stepper">
-      {wizardSteps.map((step, idx) => {
-        const stepNum = idx + 1;
-        const isDone = stepNum < currentStep;
-        const isActive = stepNum === currentStep;
-        const stateClass = isDone
-          ? " done"
-          : isActive
-          ? " active"
-          : " inactive";
-
-        return (
-          <div className="step-item" key={step.title}>
-            {idx > 0 && (
-              <div
-                className={
-                  "step-connector" + (stepNum <= currentStep ? " done" : "")
-                }
-              />
-            )}
-            <div className={"step-circle" + stateClass}>
-              {isDone ? (
-                <Icon name="check" size="0.75rem" color="var(--success)" strokeWidth={3} />
-              ) : (
-                stepNum
-              )}
-            </div>
-            <span className={"step-label" + stateClass}>{step.title}</span>
-          </div>
-        );
-      })}
-    </div>
+    <Steps
+      className="wizard-steps"
+      size="small"
+      current={currentStep - 1}
+      onChange={(idx) => {
+        // 仅允许点击返回到已完成的步骤；向前推进走底部"下一步"按钮
+        if (idx < currentStep - 1) {
+          setCurrentStep(idx + 1);
+        }
+      }}
+      items={wizardSteps}
+    />
   );
 }
   Object.assign(__export, { WizardStepper });
@@ -6210,26 +6144,32 @@ function InfoBanner({ type = "info", icon, children }) {
 (function () {
   const { useState } = React;
   const { Icon } = __export;
-function CollapseSection({ title, children, defaultOpen = true }) {
-  const [open, setOpen] = useState(defaultOpen);
+function CollapseSection({ title, children, defaultOpen = true, open, onToggle, className }) {
+  const [internalOpen, setInternalOpen] = useState(defaultOpen);
+  const isOpen = open !== undefined ? open : internalOpen;
+
+  const handleToggle = () => {
+    if (onToggle) onToggle(!isOpen);
+    else setInternalOpen((o) => !o);
+  };
 
   return (
-    <div className="collapse-section">
+    <div className={"collapse-section" + (className ? " " + className : "")}>
       <div
         className="collapse-header"
-        onClick={() => setOpen((o) => !o)}
+        onClick={handleToggle}
         role="button"
         tabIndex={0}
       >
         <Icon
-          name={open ? "chevron-down" : "chevron-right"}
+          name={isOpen ? "chevron-down" : "chevron-right"}
           size="1rem"
           color="var(--on-surface-variant)"
-          className={"collapse-arrow" + (open ? "" : " collapsed")}
+          className={"collapse-arrow" + (isOpen ? "" : " collapsed")}
         />
         <span className="collapse-title">{title}</span>
       </div>
-      {open && <div className="collapse-body">{children}</div>}
+      {isOpen && <div className="collapse-body">{children}</div>}
     </div>
   );
 }
@@ -6245,19 +6185,36 @@ function DynamicInputRow({
   initialValues = [],
   placeholder = "",
   width = "17.5rem",
+  onChange,
+  label,
 }) {
   const [values, setValues] = useState(
     initialValues.length > 0 ? [...initialValues] : [""]
   );
 
-  const addRow = () => setValues((v) => [...v, ""]);
-  const removeRow = (idx) =>
-    setValues((v) => (v.length > 1 ? v.filter((_, i) => i !== idx) : v));
-  const updateRow = (idx, val) =>
-    setValues((v) => v.map((x, i) => (i === idx ? val : x)));
+  const emit = (next) => {
+    if (onChange) onChange(next);
+  };
+  const addRow = () => {
+    const next = [...values, ""];
+    setValues(next);
+    emit(next);
+  };
+  const removeRow = (idx) => {
+    if (values.length <= 1) return;
+    const next = values.filter((_, i) => i !== idx);
+    setValues(next);
+    emit(next);
+  };
+  const updateRow = (idx, val) => {
+    const next = values.map((x, i) => (i === idx ? val : x));
+    setValues(next);
+    emit(next);
+  };
 
   return (
     <div className="esn-row">
+      {label}
       {values.map((val, idx) => (
         <div className="esn-input-group" key={idx}>
           <Input
@@ -6437,8 +6394,21 @@ function NetworkPlanning() {
   const [modalOpen, setModalOpen] = useState(false);
   const [southConfigured, setSouthConfigured] = useState(false);
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+  // 渐进式展开：默认前两节（拓扑规划、IP规划）展开；填完当前节最后一项揭示下一节；每节可独立折叠/展开
+  const [openKeys, setOpenKeys] = useState(["topo", "ip"]);
+  const reveal = (key) =>
+    setOpenKeys((prev) => (prev.includes(key) ? prev : [...prev, key]));
+  const toggle = (key, open) =>
+    setOpenKeys((prev) =>
+      open ? (prev.includes(key) ? prev : [...prev, key]) : prev.filter((k) => k !== key)
+    );
 
   const isClassic = planningType === "classic";
+
+  // 规划模式切换时，组网形态区块出现/消失，步骤集变化 → 回到默认前两节
+  useEffect(() => {
+    setOpenKeys(["topo", "ip"]);
+  }, [planningType]);
 
   useEffect(() => {
     setSelectedRowKeys([]);
@@ -6464,6 +6434,9 @@ function NetworkPlanning() {
     },
   ];
 
+  // IP规划之后紧跟的区块：经典模式为组网形态，自定义模式为全局配置
+  const keyAfterIp = isClassic ? "shape" : "global";
+
   return (
     <div className="network-planning">
       <div className="np-banner-area">
@@ -6472,7 +6445,11 @@ function NetworkPlanning() {
         </InfoBanner>
       </div>
 
-      <CollapseSection title="拓扑规划">
+      <CollapseSection
+        title="拓扑规划"
+        open={openKeys.includes("topo")}
+        onToggle={(v) => toggle("topo", v)}
+      >
         <div className="form-row">
           <label className="form-label required">拓扑规划</label>
           <Segmented
@@ -6510,8 +6487,8 @@ function NetworkPlanning() {
               />
             </div>
             <div className="form-row">
-              <label className="form-label required">Spine设备ESN</label>
               <DynamicInputRow
+                label={<label className="form-label required">Spine设备ESN</label>}
                 initialValues={["SDFWSEFV44200000"]}
                 placeholder="ESN"
               />
@@ -6523,6 +6500,7 @@ function NetworkPlanning() {
                 defaultValue="outband"
                 size="small"
                 style={{ width: "16.25rem" }}
+                onChange={() => reveal("ip")}
               />
             </div>
           </div>
@@ -6554,13 +6532,18 @@ function NetworkPlanning() {
                 defaultValue="outband"
                 size="small"
                 style={{ width: "16.25rem" }}
+                onChange={() => reveal("ip")}
               />
             </div>
           </div>
         )}
       </CollapseSection>
 
-      <CollapseSection title="IP规划">
+      <CollapseSection
+        title="IP规划"
+        open={openKeys.includes("ip")}
+        onToggle={(v) => toggle("ip", v)}
+      >
         {!isClassic && (
           <div className="form-row">
             <Tooltip title="精细规划IP地址">
@@ -6568,7 +6551,10 @@ function NetworkPlanning() {
             </Tooltip>
             <Switch
               checked={ipPlanningOn}
-              onChange={(v) => setIpPlanningOn(v)}
+              onChange={(v) => {
+                setIpPlanningOn(v);
+                reveal(keyAfterIp);
+              }}
               size="small"
             />
           </div>
@@ -6594,8 +6580,12 @@ function NetworkPlanning() {
                     已选 {selectedRowKeys.length} 项
                   </span>
                 )}
-                {hasIpPoolData && <Button size="small">删除</Button>}
-                <Button type="primary" size="small">
+                {hasIpPoolData && <Button size="small">取消</Button>}
+                <Button
+                  type="primary"
+                  size="small"
+                  onClick={() => reveal(keyAfterIp)}
+                >
                   添加
                 </Button>
               </div>
@@ -6623,7 +6613,11 @@ function NetworkPlanning() {
       </CollapseSection>
 
       {isClassic && (
-        <CollapseSection title="组网形态">
+        <CollapseSection
+          title="组网形态"
+          open={openKeys.includes("shape")}
+          onToggle={(v) => toggle("shape", v)}
+        >
           <div className="form-row">
             <label className="form-label required">Leaf组网形态</label>
             <Select
@@ -6646,30 +6640,35 @@ function NetworkPlanning() {
             />
           </div>
           <div className="form-row">
-            <label className="form-label required">Spine上行口范围</label>
             <DynamicInputRow
+              label={<label className="form-label required">Spine上行口范围</label>}
               initialValues={["10GE1/0/0~10GE1/0/6"]}
               placeholder="10GE1/0/0~10GE1/0/6"
             />
           </div>
           <div className="form-row">
-            <label className="form-label required">Spine下行口范围</label>
             <DynamicInputRow
+              label={<label className="form-label required">Spine下行口范围</label>}
               initialValues={["10GE1/0/0~10GE1/0/6"]}
               placeholder="10GE1/0/0~10GE1/0/6"
             />
           </div>
           <div className="form-row">
-            <label className="form-label required">Leaf-Peer-link口范围</label>
             <DynamicInputRow
+              label={<label className="form-label required">Leaf-Peer-link口范围</label>}
               initialValues={["10GE1/0/0~10GE1/0/6"]}
               placeholder="10GE1/0/0~10GE1/0/6"
+              onChange={() => reveal("global")}
             />
           </div>
         </CollapseSection>
       )}
 
-      <CollapseSection title="全局配置">
+      <CollapseSection
+        title="全局配置"
+        open={openKeys.includes("global")}
+        onToggle={(v) => toggle("global", v)}
+      >
         <div className="form-row">
           <label className="form-label required">配置南向协议</label>
           <Button
@@ -6703,35 +6702,140 @@ function NetworkPlanning() {
   Object.assign(__export, { NetworkPlanning });
 })();
 
-/* ===== src/components/ip-input/index.jsx ===== */
+/* ===== assets/shared/ip-input.jsx ===== */
 (function () {
-  const { Input } = antd;
-function IpInput({ withRange = false, defaultSegments = ["192", "168", "1", "1"] }) {
-  const SegmentGroup = () => (
-    <div className="ip-segment-group">
-      {defaultSegments.map((seg, i) => (
-        <span key={i} className="ip-segment-wrap">
-          <Input
-            defaultValue={seg}
-            className="ip-segment-input"
-            size="small"
-          />
-          {i < defaultSegments.length - 1 && <span className="ip-dot">·</span>}
-        </span>
-      ))}
-    </div>
-  );
+  const { useState, useEffect } = React;
+// IPInput — IP / IPv6 / MAC 分段输入控件（antd 无此组件，skill 内置）
+// mode 决定段数/分隔符/字符集：ipv4 = 4段"."十进制，ipv6 = 8段":"十六进制小写，mac = 6段"-"十六进制大写
+// value/onChange 均为完整字符串（如 "192.168.1.1"）；分段 blur 时归一化钳制。
 
-  return (
-    <div className="ip-input-group">
-      <SegmentGroup />
-      {withRange && (
-        <>
-          <span className="ip-dash">—</span>
-          <SegmentGroup />
-        </>
-      )}
-    </div>
+const MODES = {
+  ipv4: { sep: ".", count: 4, maxLen: 3, dotSep: true, filter: (s) => s.replace(/[^0-9]/g, "") },
+  ipv6: { sep: ":", count: 8, maxLen: 4, filter: (s) => s.replace(/[^0-9a-fA-F]/g, "").toLowerCase() },
+  mac: { sep: "-", count: 6, maxLen: 2, filter: (s) => s.replace(/[^0-9a-fA-F]/g, "").toUpperCase() },
+};
+
+function segmentsFromValue(value, cfg) {
+  const parts = String(value ?? "").split(cfg.sep);
+  const segs = [];
+  for (let i = 0; i < cfg.count; i++) segs.push(parts[i] ?? "");
+  return segs;
+}
+
+function IpInput({ type = "ipv4", value, onChange, onFocus, onBlur, status, disabled, id, className = "", style }) {
+  const cfg = MODES[type] || MODES.ipv4;
+  const [segs, setSegs] = useState(() => segmentsFromValue(value, cfg));
+  const [focused, setFocused] = useState(false);
+
+  useEffect(() => {
+    setSegs(segmentsFromValue(value, cfg));
+  }, [value, type]);
+
+  const emit = (next) => {
+    if (onChange) onChange(next.join(cfg.sep));
+  };
+
+  function handleInput(i, raw) {
+    const next = [...segs];
+    next[i] = cfg.filter(raw).slice(0, cfg.maxLen);
+    setSegs(next);
+    emit(next);
+  }
+
+  function handleBlur(i) {
+    const next = [...segs];
+    const s = next[i];
+    if (type === "ipv4") {
+      let n = parseInt(s, 10);
+      if (Number.isNaN(n)) n = 0;
+      next[i] = String(Math.min(255, Math.max(0, n)));
+    } else if (type === "mac") {
+      next[i] = (s || "0").padStart(2, "0");
+    } else {
+      next[i] = (s || "0").toLowerCase();
+    }
+    setSegs(next);
+    emit(next);
+    return next.join(cfg.sep);
+  }
+
+  const borderColor = status === "error" ? "var(--color-error)" : focused ? "var(--color-brand)" : "var(--gray-20)";
+
+  const children = [];
+  for (let i = 0; i < cfg.count; i++) {
+    children.push(
+      React.createElement("input", {
+        key: i,
+        id: i === 0 ? id : undefined,
+        value: segs[i],
+        disabled,
+        maxLength: cfg.maxLen,
+        onChange: (e) => handleInput(i, e.target.value),
+        onBlur: () => {
+          const v = handleBlur(i);
+          if (onBlur) onBlur(v);
+        },
+        style: {
+          width: `${cfg.maxLen + 1}ch`,
+          border: "none",
+          outline: "none",
+          background: "transparent",
+          padding: 0,
+          textAlign: "center",
+          color: "var(--color-text-primary)",
+          font: "var(--font-body-m)",
+        },
+      })
+    );
+    if (i < cfg.count - 1) {
+      children.push(
+        cfg.dotSep
+          ? React.createElement("span", {
+              key: `sep-${i}`,
+              style: {
+                width: "0.1875rem",
+                height: "0.1875rem",
+                borderRadius: "50%",
+                background: "var(--color-text-secondary)",
+                flexShrink: 0,
+              },
+            })
+          : React.createElement(
+              "span",
+              {
+                key: `sep-${i}`,
+                style: { color: "var(--color-text-secondary)", userSelect: "none", font: "var(--font-body-m)" },
+              },
+              cfg.sep
+            )
+      );
+    }
+  }
+
+  return React.createElement(
+    "div",
+    {
+      className,
+      onFocusCapture: () => {
+        setFocused(true);
+        if (onFocus) onFocus(segs.join(cfg.sep));
+      },
+      onBlurCapture: () => setFocused(false),
+      style: {
+        display: "inline-flex",
+        alignItems: "center",
+        gap: "0.25rem",
+        height: "2rem",
+        padding: "0 0.5rem",
+        border: `1px solid ${borderColor}`,
+        borderRadius: "4px",
+        background: disabled ? "var(--gray-05)" : "var(--color-bg-2)",
+        opacity: disabled ? 0.6 : 1,
+        cursor: disabled ? "not-allowed" : "text",
+        ...style,
+      },
+    },
+    children
   );
 }
   Object.assign(__export, { IpInput });
@@ -6748,6 +6852,9 @@ function IpInput({ withRange = false, defaultSegments = ["192", "168", "1", "1"]
 function RegionConfig() {
   const [fabricMgmt, setFabricMgmt] = useState("new");
   const [ospfProcess, setOspfProcess] = useState(1);
+  const [dhcpOn, setDhcpOn] = useState(true);
+  const [syslogOn, setSyslogOn] = useState(true);
+  const [stelnetOn, setStelnetOn] = useState(true);
 
   return (
     <div className="region-config">
@@ -6757,7 +6864,7 @@ function RegionConfig() {
         </InfoBanner>
       </div>
 
-      <CollapseSection title="基础配置">
+      <CollapseSection title="基础配置" className="section-basic">
         <div className="form-row">
           <label className="form-label required">Fabric管理</label>
           <Segmented
@@ -6788,61 +6895,71 @@ function RegionConfig() {
 
         <div className="form-row">
           <label className="form-label required">使用内置DHCP</label>
-          <Switch defaultChecked size="small" />
+          <Switch checked={dhcpOn} onChange={setDhcpOn} size="small" />
         </div>
 
-        <div className="form-subsection">
-          <div className="form-subsection-row">
-            <div className="form-subsection-item">
-              <label className="form-label narrow required">DHCP网段</label>
-              <Input defaultValue="425.639.0/24" size="small" style={{ width: "17.5rem" }} />
-            </div>
-            <div className="form-subsection-item">
-              <label className="form-label wide required">IP地址（源-目的）</label>
-              <IpInput withRange defaultSegments={["192", "168", "1", "1"]} />
-            </div>
-            <div className="form-subsection-item">
-              <label className="form-label narrow required">默认网关</label>
-              <IpInput defaultSegments={["192", "168", "1", "1"]} />
+        {dhcpOn && (
+          <div className="form-subsection">
+            <div className="form-subsection-row">
+              <div className="form-subsection-item">
+                <label className="form-label narrow required">DHCP网段</label>
+                <Input defaultValue="425.639.0/24" size="small" style={{ width: "17.5rem" }} />
+              </div>
+              <div className="form-subsection-item">
+                <label className="form-label wide required">IP地址（源-目的）</label>
+                <div className="ip-range-group">
+                  <IpInput value="192.168.1.1" />
+                  <span className="ip-range-dash">—</span>
+                  <IpInput value="192.168.1.1" />
+                </div>
+              </div>
+              <div className="form-subsection-item">
+                <label className="form-label narrow required">默认网关</label>
+                <IpInput value="192.168.1.1" />
+              </div>
             </div>
           </div>
-        </div>
+        )}
 
         <div className="form-row">
           <label className="form-label required">Syslog使能开关</label>
-          <Switch defaultChecked size="small" />
+          <Switch checked={syslogOn} onChange={setSyslogOn} size="small" />
         </div>
 
-        <div className="form-subsection">
-          <div className="form-subsection-row">
-            <div className="form-subsection-item">
-              <label className="form-label narrow required">端口号</label>
-              <Input placeholder="请输入内容" size="small" style={{ width: "17.5rem" }} />
+        {syslogOn && (
+          <div className="form-subsection">
+            <div className="form-subsection-row">
+              <div className="form-subsection-item">
+                <label className="form-label narrow required">端口号</label>
+                <Input placeholder="请输入内容" size="small" style={{ width: "17.5rem" }} />
+              </div>
             </div>
           </div>
-        </div>
+        )}
 
         <div className="form-row">
           <label className="form-label required">配置stelnet账户</label>
-          <Switch defaultChecked size="small" />
+          <Switch checked={stelnetOn} onChange={setStelnetOn} size="small" />
         </div>
 
-        <div className="form-subsection">
-          <div className="form-subsection-row">
-            <div className="form-subsection-item">
-              <label className="form-label narrow required">用户名</label>
-              <Input placeholder="请输入内容" size="small" style={{ width: "17.5rem" }} />
-            </div>
-            <div className="form-subsection-item">
-              <label className="form-label narrow required">密码</label>
-              <Input placeholder="请输入内容" size="small" style={{ width: "17.5rem" }} />
-            </div>
-            <div className="form-subsection-item">
-              <label className="form-label narrow required">确认密码</label>
-              <Input placeholder="请输入内容" size="small" style={{ width: "17.5rem" }} />
+        {stelnetOn && (
+          <div className="form-subsection">
+            <div className="form-subsection-row">
+              <div className="form-subsection-item">
+                <label className="form-label narrow required">用户名</label>
+                <Input placeholder="请输入内容" size="small" style={{ width: "17.5rem" }} />
+              </div>
+              <div className="form-subsection-item">
+                <label className="form-label narrow required">密码</label>
+                <Input placeholder="请输入内容" size="small" style={{ width: "17.5rem" }} />
+              </div>
+              <div className="form-subsection-item">
+                <label className="form-label narrow required">确认密码</label>
+                <Input placeholder="请输入内容" size="small" style={{ width: "17.5rem" }} />
+              </div>
             </div>
           </div>
-        </div>
+        )}
 
         <div className="form-row">
           <label className="form-label required">配置串口密码</label>
@@ -6860,7 +6977,7 @@ function RegionConfig() {
         </div>
       </CollapseSection>
 
-      <CollapseSection title="Underlay配置">
+      <CollapseSection title="Underlay配置" defaultOpen={false}>
         <div className="form-row">
           <label className="form-label required">Underlay协议类型</label>
           <Select
@@ -6884,7 +7001,7 @@ function RegionConfig() {
         </div>
         <div className="form-row">
           <label className="form-label required">OSPF区域ID</label>
-          <IpInput defaultSegments={["0", "0", "0", "0"]} />
+          <IpInput value="0.0.0.0" />
         </div>
         <div className="form-row">
           <label className="form-label required">Overlay IBGP AS号</label>

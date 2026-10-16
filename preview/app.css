@@ -23,12 +23,17 @@
 .form-row {
   display: flex;
   align-items: center;
-  gap: 1.5rem;
-  margin-bottom: 1rem;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
 }
 
 .form-row:last-child {
   margin-bottom: 0;
+}
+
+/* 表项紧邻下方子区块(参数组)时紧凑成组 8px；其余表项之间保持较宽间距 */
+.form-row:has(+ .form-subsection) {
+  margin-bottom: 0.5rem;
 }
 
 .form-label {
@@ -53,8 +58,8 @@
 }
 
 .form-label.narrow {
-  min-width: 6.25rem;
-  max-width: 6.25rem;
+  min-width: 5rem;
+  max-width: 5rem;
 }
 
 .form-label.wide {
@@ -63,10 +68,10 @@
 }
 
 .form-subsection {
-  background: var(--surface-variant);
+  background: rgb(from var(--gray-40) r g b / 0.05);
   border-radius: var(--radius-base);
   padding: 1rem 1.25rem;
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
 }
 
 .form-subsection:last-child {
@@ -76,14 +81,14 @@
 .form-subsection-row {
   display: flex;
   align-items: center;
-  gap: 2rem;
+  gap: 2.5rem;
   flex-wrap: wrap;
 }
 
 .form-subsection-item {
   display: flex;
   align-items: center;
-  gap: 1.5rem;
+  gap: 1rem;
 }
 
 .cell-link {

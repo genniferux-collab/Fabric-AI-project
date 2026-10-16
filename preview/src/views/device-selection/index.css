@@ -69,8 +69,9 @@
   flex: 0 0 auto;
   min-height: 0;
   overflow: hidden;
-  /* top rule only: no left/right/bottom borders */
-  border-top: 1px solid var(--outline-variant);
+  /* 四边外边框，与规范表格一致（含左右外边框） */
+  border: 1px solid var(--outline-variant);
+  border-radius: var(--radius-base);
 }
 
 /* Spacing fully controlled by the custom empty block */

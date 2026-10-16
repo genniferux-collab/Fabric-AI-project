@@ -34,8 +34,21 @@ export default function NetworkPlanning() {
   const [modalOpen, setModalOpen] = useState(false);
   const [southConfigured, setSouthConfigured] = useState(false);
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+  // 渐进式展开：默认前两节（拓扑规划、IP规划）展开；填完当前节最后一项揭示下一节；每节可独立折叠/展开
+  const [openKeys, setOpenKeys] = useState(["topo", "ip"]);
+  const reveal = (key) =>
+    setOpenKeys((prev) => (prev.includes(key) ? prev : [...prev, key]));
+  const toggle = (key, open) =>
+    setOpenKeys((prev) =>
+      open ? (prev.includes(key) ? prev : [...prev, key]) : prev.filter((k) => k !== key)
+    );
 
   const isClassic = planningType === "classic";
+
+  // 规划模式切换时，组网形态区块出现/消失，步骤集变化 → 回到默认前两节
+  useEffect(() => {
+    setOpenKeys(["topo", "ip"]);
+  }, [planningType]);
 
   useEffect(() => {
     setSelectedRowKeys([]);
@@ -61,6 +74,9 @@ export default function NetworkPlanning() {
     },
   ];
 
+  // IP规划之后紧跟的区块：经典模式为组网形态，自定义模式为全局配置
+  const keyAfterIp = isClassic ? "shape" : "global";
+
   return (
     <div className="network-planning">
       <div className="np-banner-area">
@@ -69,7 +85,11 @@ export default function NetworkPlanning() {
         </InfoBanner>
       </div>
 
-      <CollapseSection title="拓扑规划">
+      <CollapseSection
+        title="拓扑规划"
+        open={openKeys.includes("topo")}
+        onToggle={(v) => toggle("topo", v)}
+      >
         <div className="form-row">
           <label className="form-label required">拓扑规划</label>
           <Segmented
@@ -107,8 +127,8 @@ export default function NetworkPlanning() {
               />
             </div>
             <div className="form-row">
-              <label className="form-label required">Spine设备ESN</label>
               <DynamicInputRow
+                label={<label className="form-label required">Spine设备ESN</label>}
                 initialValues={["SDFWSEFV44200000"]}
                 placeholder="ESN"
               />
@@ -120,6 +140,7 @@ export default function NetworkPlanning() {
                 defaultValue="outband"
                 size="small"
                 style={{ width: "16.25rem" }}
+                onChange={() => reveal("ip")}
               />
             </div>
           </div>
@@ -151,13 +172,18 @@ export default function NetworkPlanning() {
                 defaultValue="outband"
                 size="small"
                 style={{ width: "16.25rem" }}
+                onChange={() => reveal("ip")}
               />
             </div>
           </div>
         )}
       </CollapseSection>
 
-      <CollapseSection title="IP规划">
+      <CollapseSection
+        title="IP规划"
+        open={openKeys.includes("ip")}
+        onToggle={(v) => toggle("ip", v)}
+      >
         {!isClassic && (
           <div className="form-row">
             <Tooltip title="精细规划IP地址">
@@ -165,7 +191,10 @@ export default function NetworkPlanning() {
             </Tooltip>
             <Switch
               checked={ipPlanningOn}
-              onChange={(v) => setIpPlanningOn(v)}
+              onChange={(v) => {
+                setIpPlanningOn(v);
+                reveal(keyAfterIp);
+              }}
               size="small"
             />
           </div>
@@ -191,8 +220,12 @@ export default function NetworkPlanning() {
                     已选 {selectedRowKeys.length} 项
                   </span>
                 )}
-                {hasIpPoolData && <Button size="small">删除</Button>}
-                <Button type="primary" size="small">
+                {hasIpPoolData && <Button size="small">取消</Button>}
+                <Button
+                  type="primary"
+                  size="small"
+                  onClick={() => reveal(keyAfterIp)}
+                >
                   添加
                 </Button>
               </div>
@@ -220,7 +253,11 @@ export default function NetworkPlanning() {
       </CollapseSection>
 
       {isClassic && (
-        <CollapseSection title="组网形态">
+        <CollapseSection
+          title="组网形态"
+          open={openKeys.includes("shape")}
+          onToggle={(v) => toggle("shape", v)}
+        >
           <div className="form-row">
             <label className="form-label required">Leaf组网形态</label>
             <Select
@@ -243,30 +280,35 @@ export default function NetworkPlanning() {
             />
           </div>
           <div className="form-row">
-            <label className="form-label required">Spine上行口范围</label>
             <DynamicInputRow
+              label={<label className="form-label required">Spine上行口范围</label>}
               initialValues={["10GE1/0/0~10GE1/0/6"]}
               placeholder="10GE1/0/0~10GE1/0/6"
             />
           </div>
           <div className="form-row">
-            <label className="form-label required">Spine下行口范围</label>
             <DynamicInputRow
+              label={<label className="form-label required">Spine下行口范围</label>}
               initialValues={["10GE1/0/0~10GE1/0/6"]}
               placeholder="10GE1/0/0~10GE1/0/6"
             />
           </div>
           <div className="form-row">
-            <label className="form-label required">Leaf-Peer-link口范围</label>
             <DynamicInputRow
+              label={<label className="form-label required">Leaf-Peer-link口范围</label>}
               initialValues={["10GE1/0/0~10GE1/0/6"]}
               placeholder="10GE1/0/0~10GE1/0/6"
+              onChange={() => reveal("global")}
             />
           </div>
         </CollapseSection>
       )}
 
-      <CollapseSection title="全局配置">
+      <CollapseSection
+        title="全局配置"
+        open={openKeys.includes("global")}
+        onToggle={(v) => toggle("global", v)}
+      >
         <div className="form-row">
           <label className="form-label required">配置南向协议</label>
           <Button

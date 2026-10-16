@@ -1866,7 +1866,7 @@ input.ant-input.ant-input-sm {
   color: var(--color-link);
 }
 .ant-steps .ant-steps-item.ant-steps-item-process .ant-steps-item-container .ant-steps-item-content .ant-steps-item-title::after {
-  background-color: var(--color-border-separator);
+  background-color: var(--color-border);
 }
 .ant-steps .ant-steps-item.ant-steps-item-process .ant-steps-item-container .ant-steps-item-tail::after {
   background-color: var(--color-border-separator);
@@ -1883,7 +1883,7 @@ input.ant-input.ant-input-sm {
   color: var(--color-text-secondary);
 }
 .ant-steps .ant-steps-item.ant-steps-item-wait .ant-steps-item-container .ant-steps-item-content .ant-steps-item-title::after {
-  background-color: var(--color-border-separator);
+  background-color: var(--color-border);
 }
 .ant-steps .ant-steps-item.ant-steps-item-wait .ant-steps-item-container .ant-steps-item-content .ant-steps-item-description {
   color: var(--color-text-secondary);
@@ -1902,6 +1902,9 @@ input.ant-input.ant-input-sm {
   border-color: var(--color-border-focus);
   background-color: var(--color-info-primary-subtler);
   color: var(--color-border-focus);
+}
+.ant-steps .ant-steps-item.ant-steps-item-finish .ant-steps-item-container .ant-steps-item-content .ant-steps-item-title::after {
+  background-color: var(--color-brand);
 }
 .ant-steps .ant-steps-item .ant-steps-item-description {
   font-size: var(--font-size-md);

@@ -124,7 +124,7 @@ export default function IpInput({ type = "ipv4", value, onChange, onFocus, onBlu
         padding: "0 0.5rem",
         border: `1px solid ${borderColor}`,
         borderRadius: "4px",
-        background: disabled ? "var(--gray-05)" : "transparent",
+        background: disabled ? "var(--gray-05)" : "var(--color-bg-2)",
         opacity: disabled ? 0.6 : 1,
         cursor: disabled ? "not-allowed" : "text",
         ...style,
