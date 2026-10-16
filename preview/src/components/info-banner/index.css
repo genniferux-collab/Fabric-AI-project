@@ -10,13 +10,10 @@
 
 .info-banner.info {
   background: var(--info-container);
-  border: 1px solid var(--primary);
-  border-color: rgba(0, 103, 209, 0.25);
 }
 
 .info-banner.warning {
-  background: var(--critical-container);
-  border: 1px solid rgba(244, 132, 12, 0.3);
+  background: var(--warning-container);
 }
 
 .info-banner-icon {
