@@ -65,6 +65,31 @@
   flex-shrink: 0;
 }
 
+/* Long-text toolbar buttons (NETCONF通道信息 etc.) grow past the 88px default */
+.app-root .ds-toolbar-actions .ant-btn:not(.ant-btn-icon-only) {
+  width: auto;
+  min-width: 88px;
+}
+
+/* Status tags */
+.ds-tag-progress {
+  background: rgba(208, 216, 253, 0.3);
+  color: rgb(31, 85, 181);
+  border: none;
+}
+
+.ds-tag-ok {
+  background: var(--success-container);
+  color: var(--success);
+  border: none;
+}
+
+.ds-tag-fail {
+  background: var(--error-container);
+  color: var(--error);
+  border: none;
+}
+
 .ds-table {
   flex: 0 0 auto;
   min-height: 0;

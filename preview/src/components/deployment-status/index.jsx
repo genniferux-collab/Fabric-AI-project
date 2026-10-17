@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import InfoBanner from "../info-banner/index.jsx";
 import "./index.css";
 
@@ -10,11 +10,71 @@ const deployStages = [
   "部署完成",
 ];
 
-/* Only the first stage bar is active */
-const DONE_STAGE_COUNT = 1;
+const INITIAL_PROGRESS = 36;
+const FINAL_PROGRESS = 100;
+const TOTAL_DEVICES = 8;
 
-export default function DeploymentStatus() {
+/* Stage k lights up as progress passes k×20% (stage 1 already lit at 36%) */
+const getActiveStageCount = (progress) => {
+  if (progress >= 100) return 5;
+  if (progress >= 80) return 4;
+  if (progress >= 60) return 3;
+  if (progress >= 40) return 2;
+  return 1;
+};
+
+export default function DeploymentStatus({ onProgress, onComplete }) {
+  const [progress, setProgress] = useState(INITIAL_PROGRESS);
+  const [completed, setCompleted] = useState(false);
   const [showMore, setShowMore] = useState(false);
+  const tickerRef = useRef(null);
+
+  /* Dwell 2s after entering step 4, then start the progress ticker */
+  useEffect(() => {
+    const startTimer = setTimeout(() => {
+      tickerRef.current = setInterval(() => {
+        setProgress((p) => Math.min(p + 1, FINAL_PROGRESS));
+      }, 50);
+    }, 2000);
+
+    return () => {
+      clearTimeout(startTimer);
+      if (tickerRef.current) {
+        clearInterval(tickerRef.current);
+        tickerRef.current = null;
+      }
+    };
+  }, []);
+
+  /* At 100%: stop the ticker, dwell 1s, then flip to the success state */
+  useEffect(() => {
+    if (progress < FINAL_PROGRESS) return undefined;
+    if (tickerRef.current) {
+      clearInterval(tickerRef.current);
+      tickerRef.current = null;
+    }
+    const doneTimer = setTimeout(() => {
+      setCompleted(true);
+      if (onComplete) onComplete();
+    }, 1000);
+    return () => clearTimeout(doneTimer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [progress]);
+
+  /* Report progress upward so the device table can follow along */
+  useEffect(() => {
+    if (onProgress) onProgress(progress);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [progress]);
+
+  const activeStageCount = getActiveStageCount(progress);
+
+  /* Success / in-progress counters grow with the progress, not at the end */
+  const successCount = Math.round(
+    (TOTAL_DEVICES * (progress - INITIAL_PROGRESS)) /
+      (FINAL_PROGRESS - INITIAL_PROGRESS)
+  );
+  const inProgressCount = TOTAL_DEVICES - successCount;
 
   return (
     <div className="deployment-status">
@@ -44,14 +104,14 @@ export default function DeploymentStatus() {
         <div className="dep-panel-top">
           <div className="dep-rate">
             <span className="dep-rate-value">
-              <span className="dep-rate-num">36</span>
+              <span className="dep-rate-num">{progress}</span>
               <span className="dep-rate-unit">%</span>
             </span>
             <span className="dep-rate-label">部署进度</span>
           </div>
           <div className="dep-stats">
             <div className="dep-stat">
-              <span className="dep-stat-num">0</span>
+              <span className="dep-stat-num">{successCount}</span>
               <span className="dep-stat-item">
                 <span className="dep-dot dep-dot-success" />
                 <span className="dep-stat-text success">成功</span>
@@ -65,7 +125,7 @@ export default function DeploymentStatus() {
               </span>
             </div>
             <div className="dep-stat">
-              <span className="dep-stat-num">8</span>
+              <span className="dep-stat-num">{inProgressCount}</span>
               <span className="dep-stat-item">
                 <span className="dep-dot dep-dot-progress" />
                 <span className="dep-stat-text progress">部署中</span>
@@ -79,11 +139,15 @@ export default function DeploymentStatus() {
             <div className="dep-step" key={label}>
               <div
                 className={
-                  "dep-step-bar" + (i < DONE_STAGE_COUNT ? " done" : "")
+                  "dep-step-bar" +
+                  (i < activeStageCount ? " done" : "") +
+                  (completed ? " completed" : "")
                 }
               />
               <div
-                className={"dep-step-label" + (i >= 2 ? " pending" : "")}
+                className={
+                  "dep-step-label" + (!completed && i >= 2 ? " pending" : "")
+                }
                 title={label}
               >
                 {label}
