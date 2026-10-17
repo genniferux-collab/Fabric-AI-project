@@ -16,6 +16,7 @@ import InfoBanner from "../../components/info-banner/index.jsx";
 import CollapseSection from "../../components/collapse-section/index.jsx";
 import DynamicInputRow from "../../components/dynamic-input-row/index.jsx";
 import SouthProtocolModal from "../../components/south-protocol-modal/index.jsx";
+import IpPoolModal from "../../components/ip-pool-modal/index.jsx";
 import {
   planningTypes,
   managementOptions,
@@ -34,6 +35,10 @@ export default function NetworkPlanning() {
   const [modalOpen, setModalOpen] = useState(false);
   const [southConfigured, setSouthConfigured] = useState(false);
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+  // IP池添加弹窗
+  const [ipPoolModalOpen, setIpPoolModalOpen] = useState(false);
+  // IP池数据（可动态添加），初始化自 mock
+  const [ipPoolData, setIpPoolData] = useState(() => ({ ...ipPoolDataMap }));
   // 渐进式展开：默认前两节（拓扑规划、IP规划）展开；填完当前节最后一项揭示下一节；每节可独立折叠/展开
   const [openKeys, setOpenKeys] = useState(["topo", "ip"]);
   const reveal = (key) =>
@@ -54,7 +59,7 @@ export default function NetworkPlanning() {
     setSelectedRowKeys([]);
   }, [activeIpTab]);
 
-  const currentIpPoolData = ipPoolDataMap[activeIpTab] || [];
+  const currentIpPoolData = ipPoolData[activeIpTab] || [];
   const hasIpPoolData = currentIpPoolData.length > 0;
 
   const rowSelection = {
@@ -224,7 +229,10 @@ export default function NetworkPlanning() {
                 <Button
                   type="primary"
                   size="small"
-                  onClick={() => reveal(keyAfterIp)}
+                  onClick={() => {
+                    setIpPoolModalOpen(true);
+                    reveal(keyAfterIp);
+                  }}
                 >
                   添加
                 </Button>
@@ -334,6 +342,22 @@ export default function NetworkPlanning() {
         onConfirm={() => {
           setSouthConfigured(true);
           setModalOpen(false);
+        }}
+      />
+
+      <IpPoolModal
+        open={ipPoolModalOpen}
+        onClose={() => setIpPoolModalOpen(false)}
+        tabLabel={ipPoolTabs.find((t) => t.key === activeIpTab)?.label}
+        onConfirm={(entry) => {
+          setIpPoolData((prev) => ({
+            ...prev,
+            [activeIpTab]: [
+              ...(prev[activeIpTab] || []),
+              { id: Date.now(), ...entry },
+            ],
+          }));
+          setIpPoolModalOpen(false);
         }}
       />
     </div>

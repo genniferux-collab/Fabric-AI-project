@@ -4560,6 +4560,9 @@ input.ant-input.ant-input-sm {
 }
 
 
+/* IP池添加弹窗 — 复用 south-protocol-modal 的 .modal-form-* 全局样式，无额外覆盖 */
+
+
 .region-config {
   display: flex;
   flex-direction: column;
@@ -6546,6 +6549,96 @@ function SouthProtocolModal({ open, onClose, onConfirm }) {
   Object.assign(__export, { SouthProtocolModal });
 })();
 
+/* ===== src/components/ip-pool-modal/index.jsx ===== */
+(function () {
+  const { useState, useEffect } = React;
+  const { Modal, Input, Select, Button } = antd;
+const maskOptions = [
+  { label: "255.255.255.0 (/24)", value: "255.255.255.0" },
+  { label: "255.255.255.128 (/25)", value: "255.255.255.128" },
+  { label: "255.255.255.192 (/26)", value: "255.255.255.192" },
+  { label: "255.255.255.252 (/30)", value: "255.255.255.252" },
+  { label: "255.255.255.254 (/31)", value: "255.255.255.254" },
+  { label: "255.255.0.0 (/16)", value: "255.255.0.0" },
+  { label: "255.0.0.0 (/8)", value: "255.0.0.0" },
+];
+
+function IpPoolModal({ open, onClose, onConfirm, tabLabel }) {
+  const [startIp, setStartIp] = useState("");
+  const [endIp, setEndIp] = useState("");
+  const [mask, setMask] = useState("255.255.255.0");
+
+  // 弹窗每次打开时重置表单
+  useEffect(() => {
+    if (open) {
+      setStartIp("");
+      setEndIp("");
+      setMask("255.255.255.0");
+    }
+  }, [open]);
+
+  const handleConfirm = () => {
+    if (!startIp || !endIp) return;
+    onConfirm({ startIp, endIp, mask });
+  };
+
+  const title = "添加" + (tabLabel ? tabLabel : "IP池");
+
+  return (
+    <Modal
+      title={title}
+      open={open}
+      onCancel={onClose}
+      centered
+      width={480}
+      destroyOnClose
+      footer={[
+        <Button key="cancel" onClick={onClose}>
+          取消
+        </Button>,
+        <Button key="confirm" type="primary" onClick={handleConfirm}>
+          确定
+        </Button>,
+      ]}
+    >
+      <div className="modal-body-inner">
+        <div className="modal-form-row">
+          <label className="modal-form-label required">开始IP</label>
+          <Input
+            className="modal-form-input"
+            placeholder="请输入开始IP地址"
+            size="small"
+            value={startIp}
+            onChange={(e) => setStartIp(e.target.value)}
+          />
+        </div>
+        <div className="modal-form-row">
+          <label className="modal-form-label required">结束IP</label>
+          <Input
+            className="modal-form-input"
+            placeholder="请输入结束IP地址"
+            size="small"
+            value={endIp}
+            onChange={(e) => setEndIp(e.target.value)}
+          />
+        </div>
+        <div className="modal-form-row">
+          <label className="modal-form-label required">掩码</label>
+          <Select
+            className="modal-form-input"
+            options={maskOptions}
+            size="small"
+            value={mask}
+            onChange={setMask}
+          />
+        </div>
+      </div>
+    </Modal>
+  );
+}
+  Object.assign(__export, { IpPoolModal });
+})();
+
 /* ===== src/views/network-planning/index.jsx ===== */
 (function () {
   const { useState, useEffect } = React;
@@ -6555,6 +6648,7 @@ function SouthProtocolModal({ open, onClose, onConfirm }) {
   const CollapseSection = __export.CollapseSection;
   const DynamicInputRow = __export.DynamicInputRow;
   const SouthProtocolModal = __export.SouthProtocolModal;
+  const IpPoolModal = __export.IpPoolModal;
 function NetworkPlanning() {
   const [planningType, setPlanningType] = useState("classic");
   const [spineCount, setSpineCount] = useState(2);
@@ -6564,6 +6658,10 @@ function NetworkPlanning() {
   const [modalOpen, setModalOpen] = useState(false);
   const [southConfigured, setSouthConfigured] = useState(false);
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+  // IP池添加弹窗
+  const [ipPoolModalOpen, setIpPoolModalOpen] = useState(false);
+  // IP池数据（可动态添加），初始化自 mock
+  const [ipPoolData, setIpPoolData] = useState(() => ({ ...ipPoolDataMap }));
   // 渐进式展开：默认前两节（拓扑规划、IP规划）展开；填完当前节最后一项揭示下一节；每节可独立折叠/展开
   const [openKeys, setOpenKeys] = useState(["topo", "ip"]);
   const reveal = (key) =>
@@ -6584,7 +6682,7 @@ function NetworkPlanning() {
     setSelectedRowKeys([]);
   }, [activeIpTab]);
 
-  const currentIpPoolData = ipPoolDataMap[activeIpTab] || [];
+  const currentIpPoolData = ipPoolData[activeIpTab] || [];
   const hasIpPoolData = currentIpPoolData.length > 0;
 
   const rowSelection = {
@@ -6754,7 +6852,10 @@ function NetworkPlanning() {
                 <Button
                   type="primary"
                   size="small"
-                  onClick={() => reveal(keyAfterIp)}
+                  onClick={() => {
+                    setIpPoolModalOpen(true);
+                    reveal(keyAfterIp);
+                  }}
                 >
                   添加
                 </Button>
@@ -6864,6 +6965,22 @@ function NetworkPlanning() {
         onConfirm={() => {
           setSouthConfigured(true);
           setModalOpen(false);
+        }}
+      />
+
+      <IpPoolModal
+        open={ipPoolModalOpen}
+        onClose={() => setIpPoolModalOpen(false)}
+        tabLabel={ipPoolTabs.find((t) => t.key === activeIpTab)?.label}
+        onConfirm={(entry) => {
+          setIpPoolData((prev) => ({
+            ...prev,
+            [activeIpTab]: [
+              ...(prev[activeIpTab] || []),
+              { id: Date.now(), ...entry },
+            ],
+          }));
+          setIpPoolModalOpen(false);
         }}
       />
     </div>
