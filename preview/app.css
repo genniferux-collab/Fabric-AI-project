@@ -73,8 +73,7 @@
   transform: none;
 }
 .region-config .form-row {
-  gap: 1rem;
-  padding-left: 1rem;
+  gap: 2rem;
 }
 
 .form-label.narrow,
