@@ -434,8 +434,8 @@ export default function DeviceSelection({ deployMode = false }) {
             className="ds-canvas-bg"
             src={
               sidebarDevices.length > 0
-                ? "./assets/uploads/image.jpg"
-                : "./assets/uploads/background.jpg"
+                ? "./assets/uploads/bg-two.png"
+                : "./assets/uploads/bg-one.png"
             }
             alt=""
           />
