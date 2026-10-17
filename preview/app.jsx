@@ -33,7 +33,7 @@ function PageContent() {
       <FooterBar>
         {currentStep === 1 && <Button size="small">取消</Button>}
         {currentStep === 2 && (
-          <Button size="small">删除</Button>
+          <Button size="small">取消</Button>
         )}
         {currentStep > 1 && (
           <Button size="small" onClick={goPrev}>

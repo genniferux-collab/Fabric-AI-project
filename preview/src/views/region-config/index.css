@@ -7,14 +7,6 @@
   margin-bottom: 1.25rem;
 }
 
-/* 基础配置：表项标签收到 6.25rem(=子区块 padding1.25+narrow5 的有效宽)，
-   使 form-row 的内容(Segmented/Switch 等)与下方子区块输入框左对齐(同在 176px 列)，
-   并收窄标签到内容的间距。最长标签"配置stelnet账户"85px，100px 装得下。 */
-.section-basic .form-row > .form-label {
-  min-width: 6.25rem;
-  max-width: 6.25rem;
-}
-
 /* IP地址（源-目的）：两个内置 IpInput + 分隔符 */
 .ip-range-group {
   display: inline-flex;

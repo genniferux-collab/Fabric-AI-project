@@ -13,7 +13,8 @@
   cursor: pointer;
   user-select: none;
   margin-bottom: 0;
-  padding: 0.25rem 0;
+  /* 上沿 0.5rem(8px) 呼吸；下沿无 padding，标题→内容间距由 body margin-top 承担 */
+  padding: 0.5rem 0;
 }
 
 .collapse-arrow {
@@ -33,6 +34,8 @@
 }
 
 .collapse-body {
-  margin-top: 1rem;
-  padding-left: 0.25rem;
+  /* 标题→内容间距 0.5rem(7px@14px root) */
+  margin-top: 0.5rem;
+  /* 缩进一个折叠箭头(1rem)+gap(0.25rem)=1.25rem，使配置项标签与大标题文字左对齐 */
+  padding-left: 1.25rem;
 }

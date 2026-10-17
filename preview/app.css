@@ -57,20 +57,40 @@
   font: var(--font-body-m);
 }
 
-.form-label.narrow {
-  min-width: 5rem;
-  max-width: 5rem;
+/* 区域配置 form-row 标签统一 9rem + gap 1rem，
+   使 form-row 内容(67+7+126+14=214)与底板内容(67+7+126+14=214)左对齐 */
+.region-config .form-row > .form-label:not(.narrow):not(.wide) {
+  min-width: 9rem;
+  max-width: 9rem;
+  padding-right: 0;
+}
+/* 区域配置 form-row 必填星号改为内联，避免 absolute left:-0.5rem 抵消 padding-left 缩进 */
+.region-config .form-row > .form-label.required::before {
+  position: static;
+  margin-right: 0.25rem;
+  left: auto;
+  top: auto;
+  transform: none;
+}
+.region-config .form-row {
+  gap: 1rem;
+  padding-left: 1rem;
 }
 
+.form-label.narrow,
 .form-label.wide {
-  min-width: 8.75rem;
-  max-width: 8.75rem;
+  min-width: 9rem;
+  max-width: 9rem;
+  text-align: left;
+  padding-right: 0;
+  white-space: nowrap;
+  overflow: visible;
 }
 
 .form-subsection {
   background: rgb(from var(--gray-40) r g b / 0.05);
   border-radius: var(--radius-base);
-  padding: 1rem 1.25rem;
+  padding: 1rem 1rem;
   margin-bottom: 1.5rem;
 }
 
@@ -81,7 +101,7 @@
 .form-subsection-row {
   display: flex;
   align-items: center;
-  gap: 2.5rem;
+  gap: 2rem;
   flex-wrap: wrap;
 }
 

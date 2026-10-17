@@ -3,6 +3,9 @@
   border-bottom: 1px solid var(--outline-variant);
   box-shadow: var(--shadow-sm);
   padding: 0 2rem;
+  position: sticky;
+  top: 3rem;
+  z-index: 199;
 }
 
 .subnav-inner {

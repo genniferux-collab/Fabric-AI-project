@@ -3974,20 +3974,40 @@ input.ant-input.ant-input-sm {
   font: var(--font-body-m);
 }
 
-.form-label.narrow {
-  min-width: 5rem;
-  max-width: 5rem;
+/* 区域配置 form-row 标签统一 9rem + gap 1rem，
+   使 form-row 内容(67+7+126+14=214)与底板内容(67+7+126+14=214)左对齐 */
+.region-config .form-row > .form-label:not(.narrow):not(.wide) {
+  min-width: 9rem;
+  max-width: 9rem;
+  padding-right: 0;
+}
+/* 区域配置 form-row 必填星号改为内联，避免 absolute left:-0.5rem 抵消 padding-left 缩进 */
+.region-config .form-row > .form-label.required::before {
+  position: static;
+  margin-right: 0.25rem;
+  left: auto;
+  top: auto;
+  transform: none;
+}
+.region-config .form-row {
+  gap: 1rem;
+  padding-left: 1rem;
 }
 
+.form-label.narrow,
 .form-label.wide {
-  min-width: 8.75rem;
-  max-width: 8.75rem;
+  min-width: 9rem;
+  max-width: 9rem;
+  text-align: left;
+  padding-right: 0;
+  white-space: nowrap;
+  overflow: visible;
 }
 
 .form-subsection {
   background: rgb(from var(--gray-40) r g b / 0.05);
   border-radius: var(--radius-base);
-  padding: 1rem 1.25rem;
+  padding: 1rem 1rem;
   margin-bottom: 1.5rem;
 }
 
@@ -3998,7 +4018,7 @@ input.ant-input.ant-input-sm {
 .form-subsection-row {
   display: flex;
   align-items: center;
-  gap: 2.5rem;
+  gap: 2rem;
   flex-wrap: wrap;
 }
 
@@ -4041,6 +4061,9 @@ input.ant-input.ant-input-sm {
   border-bottom: 1px solid var(--outline-variant);
   display: flex;
   align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 200;
 }
 
 .topnav-inner {
@@ -4155,6 +4178,9 @@ input.ant-input.ant-input-sm {
   border-bottom: 1px solid var(--outline-variant);
   box-shadow: var(--shadow-sm);
   padding: 0 2rem;
+  position: sticky;
+  top: 3rem;
+  z-index: 199;
 }
 
 .subnav-inner {
@@ -4410,7 +4436,8 @@ input.ant-input.ant-input-sm {
   cursor: pointer;
   user-select: none;
   margin-bottom: 0;
-  padding: 0.25rem 0;
+  /* 上沿 0.5rem(8px) 呼吸；下沿无 padding，标题→内容间距由 body margin-top 承担 */
+  padding: 0.5rem 0;
 }
 
 .collapse-arrow {
@@ -4430,8 +4457,10 @@ input.ant-input.ant-input-sm {
 }
 
 .collapse-body {
-  margin-top: 1rem;
-  padding-left: 0.25rem;
+  /* 标题→内容间距 0.5rem(7px@14px root) */
+  margin-top: 0.5rem;
+  /* 缩进一个折叠箭头(1rem)+gap(0.25rem)=1.25rem，使配置项标签与大标题文字左对齐 */
+  padding-left: 1.25rem;
 }
 
 
@@ -4570,14 +4599,6 @@ input.ant-input.ant-input-sm {
 
 .rc-banner-area {
   margin-bottom: 1.25rem;
-}
-
-/* 基础配置：表项标签收到 6.25rem(=子区块 padding1.25+narrow5 的有效宽)，
-   使 form-row 的内容(Segmented/Switch 等)与下方子区块输入框左对齐(同在 176px 列)，
-   并收窄标签到内容的间距。最长标签"配置stelnet账户"85px，100px 装得下。 */
-.section-basic .form-row > .form-label {
-  min-width: 6.25rem;
-  max-width: 6.25rem;
 }
 
 /* IP地址（源-目的）：两个内置 IpInput + 分隔符 */
@@ -7140,8 +7161,8 @@ function RegionConfig() {
   const [fabricMgmt, setFabricMgmt] = useState("new");
   const [ospfProcess, setOspfProcess] = useState(1);
   const [dhcpOn, setDhcpOn] = useState(true);
-  const [syslogOn, setSyslogOn] = useState(true);
-  const [stelnetOn, setStelnetOn] = useState(true);
+  const [syslogOn, setSyslogOn] = useState(false);
+  const [stelnetOn, setStelnetOn] = useState(false);
 
   return (
     <div className="region-config">
@@ -8223,7 +8244,7 @@ function PageContent() {
       <FooterBar>
         {currentStep === 1 && <Button size="small">取消</Button>}
         {currentStep === 2 && (
-          <Button size="small">删除</Button>
+          <Button size="small">取消</Button>
         )}
         {currentStep > 1 && (
           <Button size="small" onClick={goPrev}>

@@ -20,8 +20,8 @@ export default function RegionConfig() {
   const [fabricMgmt, setFabricMgmt] = useState("new");
   const [ospfProcess, setOspfProcess] = useState(1);
   const [dhcpOn, setDhcpOn] = useState(true);
-  const [syslogOn, setSyslogOn] = useState(true);
-  const [stelnetOn, setStelnetOn] = useState(true);
+  const [syslogOn, setSyslogOn] = useState(false);
+  const [stelnetOn, setStelnetOn] = useState(false);
 
   return (
     <div className="region-config">
