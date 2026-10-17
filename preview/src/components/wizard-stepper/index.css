@@ -20,3 +20,9 @@
   top: 0 !important;
   line-height: 1 !important;
 }
+
+/* Finish circle: light-blue background
+   (component-level override — the shared ant.css skin stays untouched) */
+.wizard-steps .ant-steps-item.ant-steps-item-finish .ant-steps-item-icon {
+  background-color: var(--primary-container);
+}

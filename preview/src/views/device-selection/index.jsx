@@ -143,6 +143,7 @@ export default function DeviceSelection({ deployMode = false }) {
   const [confirmModalOpen, setConfirmModalOpen] = useState(false);
   const [confirmOnlineModalOpen, setConfirmOnlineModalOpen] = useState(false);
   const [deployProgress, setDeployProgress] = useState(36);
+  const [deployCompleted, setDeployCompleted] = useState(false);
 
   /* Reset row selection when switching sidebar tabs */
   useEffect(() => {
@@ -393,14 +394,16 @@ export default function DeviceSelection({ deployMode = false }) {
   const sidebarScrollX =
     activeTab === "device" ? 1036 : activeTab === "link" ? 840 : 740;
 
-  const sidebarPagination = deployMode
-    ? {
-        defaultPageSize: 10,
-        showSizeChanger: true,
-        showQuickJumper: { goButton: "跳转" },
-        showTotal: (total) => `总计：${total}`,
-      }
-    : false;
+  /* Pagination shows once the table carries data (deploy mode always does) */
+  const sidebarPagination =
+    deployMode || sidebarDataSource.length > 0
+      ? {
+          defaultPageSize: 10,
+          showSizeChanger: true,
+          showQuickJumper: { goButton: "跳转" },
+          showTotal: (total) => `总计：${total}`,
+        }
+      : false;
 
   /* Confirm: carry the checked rows (deduped by serial) into the sidebar table */
   const handleModalConfirm = () => {
@@ -424,16 +427,27 @@ export default function DeviceSelection({ deployMode = false }) {
   return (
     <div className="device-selection">
       <div className="ds-canvas">
-        <img
-          className="ds-canvas-bg"
-          src="./assets/uploads/background.jpg"
-          alt=""
-        />
+        {deployMode && deployCompleted ? (
+          <div className="ds-canvas-gradient" />
+        ) : (
+          <img
+            className="ds-canvas-bg"
+            src={
+              sidebarDevices.length > 0
+                ? "./assets/uploads/image.jpg"
+                : "./assets/uploads/background.jpg"
+            }
+            alt=""
+          />
+        )}
       </div>
       <aside className="ds-sidebar">
         <div className="ds-sidebar-title">设备选择</div>
         {deployMode && (
-          <DeploymentStatus onProgress={(p) => setDeployProgress(p)} />
+          <DeploymentStatus
+            onProgress={(p) => setDeployProgress(p)}
+            onComplete={() => setDeployCompleted(true)}
+          />
         )}
         <Tabs
           items={deviceTabs}
@@ -463,9 +477,7 @@ export default function DeviceSelection({ deployMode = false }) {
               <>
                 <Button size="small">NETCONF通道信息</Button>
                 <Button size="small">ZTP配置校验</Button>
-                <Button type="primary" size="small">
-                  刷新
-                </Button>
+                <Button size="small">刷新</Button>
               </>
             ) : (
               <>
@@ -519,9 +531,11 @@ export default function DeviceSelection({ deployMode = false }) {
         </div>
         <div className="ds-sidebar-footer">
           {deployMode ? (
-            <Button type="primary" size="small">
-              结束任务
-            </Button>
+            deployCompleted ? (
+              <Button size="small">完成</Button>
+            ) : (
+              <Button size="small">结束任务</Button>
+            )
           ) : (
             <>
               <Button size="small">删除</Button>
@@ -557,19 +571,19 @@ export default function DeviceSelection({ deployMode = false }) {
         ]}
       >
         <div className="ds-modal-body">
-          <div className="ds-modal-toolbar">
-            <Tabs
-              items={deviceTabs}
-              activeKey={modalTab}
-              onChange={(k) => setModalTab(k)}
-              size="small"
-              className="ds-modal-tabs"
-            />
-            <a className="ds-modal-export">
-              <Icon name="download" size="0.875rem" />
-              导出
-            </a>
-          </div>
+          <Tabs
+            items={deviceTabs}
+            activeKey={modalTab}
+            onChange={(k) => setModalTab(k)}
+            size="small"
+            className="ds-modal-tabs"
+            tabBarExtraContent={
+              <a className="ds-modal-export">
+                <Icon name="download" size="0.875rem" />
+                导出
+              </a>
+            }
+          />
           <Input
             size="small"
             allowClear

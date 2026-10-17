@@ -4032,6 +4032,12 @@ input.ant-input.ant-input-sm {
   to { transform: rotate(360deg); }
 }
 
+/* ===== Table overrides (moved here to keep the shared ant.css skin untouched) ===== */
+/* Column separator lines removed: tables carry no vertical borders */
+.ant-table .ant-table-content .ant-table-thead > tr > th::before {
+  display: none !important;
+}
+
 
 
 .topnav {
@@ -4214,6 +4220,12 @@ input.ant-input.ant-input-sm {
   line-height: 1 !important;
 }
 
+/* Finish circle: light-blue background
+   (component-level override — the shared ant.css skin stays untouched) */
+.wizard-steps .ant-steps-item.ant-steps-item-finish .ant-steps-item-icon {
+  background-color: var(--primary-container);
+}
+
 
 .footer-bar {
   position: fixed;
@@ -4306,6 +4318,7 @@ input.ant-input.ant-input-sm {
 
 .ip-pool-table {
   border: 1px solid var(--outline-variant);
+  border-left: none;
   border-radius: var(--radius-base);
   overflow: hidden;
 }
@@ -4606,6 +4619,17 @@ input.ant-input.ant-input-sm {
   object-fit: cover;
 }
 
+/* Success backdrop once the deployment completes */
+.ds-canvas-gradient {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    var(--success-container),
+    var(--primary-container)
+  );
+}
+
 /* Fixed sidebar: 640px wide, pinned to the right edge */
 .ds-sidebar {
   flex: 0 0 640px;
@@ -4651,13 +4675,42 @@ input.ant-input.ant-input-sm {
   flex-shrink: 0;
 }
 
+/* Long-text toolbar buttons (NETCONF通道信息 etc.) grow past the 88px default */
+.app-root .ds-toolbar-actions .ant-btn:not(.ant-btn-icon-only) {
+  width: auto;
+  min-width: 88px;
+}
+
+/* Status tags */
+.ds-tag-progress {
+  background: rgba(208, 216, 253, 0.3);
+  color: rgb(31, 85, 181);
+  border: none;
+}
+
+.ds-tag-ok {
+  background: var(--success-container);
+  color: var(--success);
+  border: none;
+}
+
+.ds-tag-fail {
+  background: var(--error-container);
+  color: var(--error);
+  border: none;
+}
+
 .ds-table {
   flex: 0 0 auto;
   min-height: 0;
   overflow: hidden;
-  /* 四边外边框，与规范表格一致（含左右外边框） */
-  border: 1px solid var(--outline-variant);
-  border-radius: var(--radius-base);
+  /* top rule only: no left/right/bottom borders */
+  border-top: 1px solid var(--outline-variant);
+}
+
+/* Tab content area: no bottom border under the last row */
+.ds-table .ant-table-tbody > tr:last-child > td {
+  border-bottom: none;
 }
 
 /* Spacing fully controlled by the custom empty block */
@@ -4782,19 +4835,9 @@ input.ant-input.ant-input-sm {
   font-weight: var(--font-weight-semibold);
 }
 
-/* Device-selection-list modal */
-.ds-modal-toolbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-}
-
-.ds-modal-tabs {
-  flex: 1 1 auto;
-  min-width: 0;
-}
-
+/* Device-selection-list modal: export action lives inside the tab bar
+   (tabBarExtraContent), so the tab underline passes beneath it and stays
+   on the same baseline as the tab labels */
 .ds-modal-export {
   display: inline-flex;
   align-items: center;
@@ -4873,6 +4916,11 @@ input.ant-input.ant-input-sm {
   line-height: 1.2;
 }
 
+/* 100% turns green once the deployment completes */
+.dep-rate-value.completed {
+  color: var(--success);
+}
+
 .dep-rate-num {
   font-size: var(--font-size-2xl);
   font-weight: var(--font-weight-medium);
@@ -4898,7 +4946,7 @@ input.ant-input.ant-input-sm {
 .dep-stat {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
 }
 
 .dep-stat-num {
@@ -4975,6 +5023,11 @@ input.ant-input.ant-input-sm {
   background: var(--primary);
 }
 
+/* Success state: every bar turns green */
+.dep-step-bar.completed {
+  background: var(--success);
+}
+
 .dep-step-label {
   margin-top: 0.375rem;
   width: 100%;
@@ -4983,7 +5036,7 @@ input.ant-input.ant-input-sm {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  text-align: center;
+  text-align: left;
 }
 
 /* Last 3 stage labels in light grey (not yet reached) */
@@ -5327,6 +5380,7 @@ function useApp() {
     "circle-alert": [["circle",{"cx":"12","cy":"12","r":"10"}],["line",{"x1":"12","x2":"12","y1":"8","y2":"12"}],["line",{"x1":"12","x2":"12.01","y1":"16","y2":"16"}]],
     "download": [["path",{"d":"M12 15V3"}],["path",{"d":"M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"}],["path",{"d":"m7 10 5 5 5-5"}]],
     "file-spreadsheet": [["path",{"d":"M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"}],["path",{"d":"M14 2v5a1 1 0 0 0 1 1h5"}],["path",{"d":"M8 13h2"}],["path",{"d":"M14 13h2"}],["path",{"d":"M8 17h2"}],["path",{"d":"M14 17h2"}]],
+    "file-text": [["path",{"d":"M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"}],["path",{"d":"M14 2v5a1 1 0 0 0 1 1h5"}],["path",{"d":"M10 9H8"}],["path",{"d":"M16 13H8"}],["path",{"d":"M16 17H8"}]],
     "info": [["circle",{"cx":"12","cy":"12","r":"10"}],["path",{"d":"M12 16v-4"}],["path",{"d":"M12 8h.01"}]],
     "menu": [["path",{"d":"M4 5h16"}],["path",{"d":"M4 12h16"}],["path",{"d":"M4 19h16"}]],
     "minus": [["path",{"d":"M5 12h14"}]],
@@ -6001,7 +6055,129 @@ const unactivatedDevices = [
   { id: 4, deviceName: "EN800", deviceEsn: "56823456123365", hasActivationCode: "无" },
   { id: 5, deviceName: "EN800", deviceEsn: "56823456123365", hasActivationCode: "无" },
 ];
-  Object.assign(__export, { navItems, wizardSteps, planningTypes, managementOptions, networkShapeOptions, ipPoolTabs, ipPoolDataMap, fabricMgmtOptions, networkTypeOptions, underlayProtocolOptions, callhomeAuthOptions, snmpAuthProtocolOptions, snmpEncryptOptions, deviceTabs, deviceSelectionList, headerToolIcons, unactivatedDevices });
+
+/* Fabric links between devices (sidebar 链路 tab) */
+const deviceLinkList = [
+  {
+    id: 1,
+    linkId: "L-0001",
+    srcDevice: "Spine-01",
+    srcPort: "10GE1/0/1",
+    dstDevice: "Leaf-01",
+    dstPort: "10GE1/0/1",
+    linkType: "Underlay",
+    linkStatus: "Up",
+  },
+  {
+    id: 2,
+    linkId: "L-0002",
+    srcDevice: "Spine-01",
+    srcPort: "10GE1/0/2",
+    dstDevice: "Leaf-02",
+    dstPort: "10GE1/0/1",
+    linkType: "Underlay",
+    linkStatus: "Up",
+  },
+  {
+    id: 3,
+    linkId: "L-0003",
+    srcDevice: "Spine-01",
+    srcPort: "10GE1/0/3",
+    dstDevice: "Leaf-03",
+    dstPort: "10GE1/0/1",
+    linkType: "Underlay",
+    linkStatus: "Up",
+  },
+  {
+    id: 4,
+    linkId: "L-0004",
+    srcDevice: "Spine-02",
+    srcPort: "10GE1/0/1",
+    dstDevice: "Leaf-04",
+    dstPort: "10GE1/0/1",
+    linkType: "Underlay",
+    linkStatus: "Down",
+  },
+  {
+    id: 5,
+    linkId: "L-0005",
+    srcDevice: "Spine-02",
+    srcPort: "10GE1/0/2",
+    dstDevice: "Leaf-05",
+    dstPort: "10GE1/0/1",
+    linkType: "Underlay",
+    linkStatus: "Up",
+  },
+  {
+    id: 6,
+    linkId: "L-0006",
+    srcDevice: "Leaf-01",
+    srcPort: "10GE1/0/47",
+    dstDevice: "Leaf-02",
+    dstPort: "10GE1/0/47",
+    linkType: "PeerLink",
+    linkStatus: "Up",
+  },
+];
+
+/* BGP interconnections (sidebar 互联 tab) */
+const deviceInterconnectList = [
+  {
+    id: 1,
+    srcDevice: "Leaf-01",
+    dstDevice: "Spine-01",
+    connType: "IBGP",
+    localIp: "10.2.1.13",
+    remoteIp: "10.2.1.11",
+    connStatus: "已建立",
+  },
+  {
+    id: 2,
+    srcDevice: "Leaf-02",
+    dstDevice: "Spine-01",
+    connType: "IBGP",
+    localIp: "10.2.1.14",
+    remoteIp: "10.2.1.11",
+    connStatus: "已建立",
+  },
+  {
+    id: 3,
+    srcDevice: "Leaf-03",
+    dstDevice: "Spine-01",
+    connType: "IBGP",
+    localIp: "10.2.1.15",
+    remoteIp: "10.2.1.11",
+    connStatus: "建立中",
+  },
+  {
+    id: 4,
+    srcDevice: "Leaf-04",
+    dstDevice: "Spine-02",
+    connType: "IBGP",
+    localIp: "10.2.1.16",
+    remoteIp: "10.2.1.12",
+    connStatus: "建立中",
+  },
+  {
+    id: 5,
+    srcDevice: "Leaf-05",
+    dstDevice: "Spine-02",
+    connType: "IBGP",
+    localIp: "10.2.1.17",
+    remoteIp: "10.2.1.12",
+    connStatus: "已建立",
+  },
+  {
+    id: 6,
+    srcDevice: "Leaf-06",
+    dstDevice: "Spine-02",
+    connType: "IBGP",
+    localIp: "10.2.1.18",
+    remoteIp: "10.2.1.12",
+    connStatus: "未建立",
+  },
+];
+  Object.assign(__export, { navItems, wizardSteps, planningTypes, managementOptions, networkShapeOptions, ipPoolTabs, ipPoolDataMap, fabricMgmtOptions, networkTypeOptions, underlayProtocolOptions, callhomeAuthOptions, snmpAuthProtocolOptions, snmpEncryptOptions, deviceTabs, deviceSelectionList, headerToolIcons, unactivatedDevices, deviceLinkList, deviceInterconnectList });
 })();
 
 /* ===== src/components/top-nav/index.jsx ===== */
@@ -7024,7 +7200,7 @@ function RegionConfig() {
 
 /* ===== src/components/deployment-status/index.jsx ===== */
 (function () {
-  const { useState } = React;
+  const { useState, useEffect, useRef } = React;
   const InfoBanner = __export.InfoBanner;
 const deployStages = [
   "初始化资源池",
@@ -7034,11 +7210,71 @@ const deployStages = [
   "部署完成",
 ];
 
-/* Only the first stage bar is active */
-const DONE_STAGE_COUNT = 1;
+const INITIAL_PROGRESS = 36;
+const FINAL_PROGRESS = 100;
+const TOTAL_DEVICES = 8;
 
-function DeploymentStatus() {
+/* Stage k lights up as progress passes k×20% (stage 1 already lit at 36%) */
+const getActiveStageCount = (progress) => {
+  if (progress >= 100) return 5;
+  if (progress >= 80) return 4;
+  if (progress >= 60) return 3;
+  if (progress >= 40) return 2;
+  return 1;
+};
+
+function DeploymentStatus({ onProgress, onComplete }) {
+  const [progress, setProgress] = useState(INITIAL_PROGRESS);
+  const [completed, setCompleted] = useState(false);
   const [showMore, setShowMore] = useState(false);
+  const tickerRef = useRef(null);
+
+  /* Dwell 2s after entering step 4, then start the progress ticker */
+  useEffect(() => {
+    const startTimer = setTimeout(() => {
+      tickerRef.current = setInterval(() => {
+        setProgress((p) => Math.min(p + 1, FINAL_PROGRESS));
+      }, 50);
+    }, 2000);
+
+    return () => {
+      clearTimeout(startTimer);
+      if (tickerRef.current) {
+        clearInterval(tickerRef.current);
+        tickerRef.current = null;
+      }
+    };
+  }, []);
+
+  /* At 100%: stop the ticker, dwell 1s, then flip to the success state */
+  useEffect(() => {
+    if (progress < FINAL_PROGRESS) return undefined;
+    if (tickerRef.current) {
+      clearInterval(tickerRef.current);
+      tickerRef.current = null;
+    }
+    const doneTimer = setTimeout(() => {
+      setCompleted(true);
+      if (onComplete) onComplete();
+    }, 1000);
+    return () => clearTimeout(doneTimer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [progress]);
+
+  /* Report progress upward so the device table can follow along */
+  useEffect(() => {
+    if (onProgress) onProgress(progress);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [progress]);
+
+  const activeStageCount = getActiveStageCount(progress);
+
+  /* Success / in-progress counters grow with the progress, not at the end */
+  const successCount = Math.round(
+    (TOTAL_DEVICES * (progress - INITIAL_PROGRESS)) /
+      (FINAL_PROGRESS - INITIAL_PROGRESS)
+  );
+  const inProgressCount = TOTAL_DEVICES - successCount;
 
   return (
     <div className="deployment-status">
@@ -7067,15 +7303,17 @@ function DeploymentStatus() {
       <div className="dep-panel">
         <div className="dep-panel-top">
           <div className="dep-rate">
-            <span className="dep-rate-value">
-              <span className="dep-rate-num">36</span>
+            <span
+              className={"dep-rate-value" + (completed ? " completed" : "")}
+            >
+              <span className="dep-rate-num">{progress}</span>
               <span className="dep-rate-unit">%</span>
             </span>
             <span className="dep-rate-label">部署进度</span>
           </div>
           <div className="dep-stats">
             <div className="dep-stat">
-              <span className="dep-stat-num">0</span>
+              <span className="dep-stat-num">{successCount}</span>
               <span className="dep-stat-item">
                 <span className="dep-dot dep-dot-success" />
                 <span className="dep-stat-text success">成功</span>
@@ -7089,7 +7327,7 @@ function DeploymentStatus() {
               </span>
             </div>
             <div className="dep-stat">
-              <span className="dep-stat-num">8</span>
+              <span className="dep-stat-num">{inProgressCount}</span>
               <span className="dep-stat-item">
                 <span className="dep-dot dep-dot-progress" />
                 <span className="dep-stat-text progress">部署中</span>
@@ -7103,11 +7341,15 @@ function DeploymentStatus() {
             <div className="dep-step" key={label}>
               <div
                 className={
-                  "dep-step-bar" + (i < DONE_STAGE_COUNT ? " done" : "")
+                  "dep-step-bar" +
+                  (i < activeStageCount ? " done" : "") +
+                  (completed ? " completed" : "")
                 }
               />
               <div
-                className={"dep-step-label" + (i >= 2 ? " pending" : "")}
+                className={
+                  "dep-step-label" + (!completed && i >= 2 ? " pending" : "")
+                }
                 title={label}
               >
                 {label}
@@ -7124,85 +7366,11 @@ function DeploymentStatus() {
 
 /* ===== src/views/device-selection/index.jsx ===== */
 (function () {
-  const { useState } = React;
+  const { useState, useEffect } = React;
   const { Tabs, Input, Button, Table, Modal, Tag } = antd;
-  const { Icon, useApp, deviceTabs, deviceSelectionList, unactivatedDevices } = __export;
+  const { Icon, useApp, deviceTabs, deviceSelectionList, unactivatedDevices, deviceLinkList, deviceInterconnectList } = __export;
   const InfoBanner = __export.InfoBanner;
   const DeploymentStatus = __export.DeploymentStatus;
-const deviceColumns = [
-  {
-    title: "操作",
-    dataIndex: "action",
-    key: "action",
-    width: 80,
-    render: () => (
-      <span className="ds-action-group">
-        <Icon
-          name="pencil"
-          size="0.875rem"
-          className="ds-action-icon"
-          title="编辑"
-        />
-        <Icon
-          name="trash-2"
-          size="0.875rem"
-          className="ds-action-icon"
-          title="删除"
-        />
-      </span>
-    ),
-  },
-  {
-    title: "上线状态",
-    dataIndex: "onlineStatus",
-    key: "onlineStatus",
-    width: 96,
-    render: (text) => <Tag>{text}</Tag>,
-  },
-  {
-    title: "设备名称",
-    dataIndex: "deviceName",
-    key: "deviceName",
-    width: 140,
-  },
-  {
-    title: "管理IPv4地址",
-    dataIndex: "mgmtIpv4",
-    key: "mgmtIpv4",
-    width: 130,
-  },
-  {
-    title: "设备角色",
-    dataIndex: "deviceRole",
-    key: "deviceRole",
-    width: 96,
-  },
-  {
-    title: "ZTP层级",
-    dataIndex: "ztpLevel",
-    key: "ztpLevel",
-    width: 88,
-  },
-  {
-    title: "VTEP IPv4",
-    dataIndex: "vtepIpv4",
-    key: "vtepIpv4",
-    width: 120,
-  },
-  {
-    title: "BGP Router ID",
-    dataIndex: "bgpRouterId",
-    key: "bgpRouterId",
-    width: 116,
-  },
-  {
-    title: "设备软件版本",
-    dataIndex: "softwareVersion",
-    key: "softwareVersion",
-    width: 110,
-  },
-];
-
 const modalDeviceColumns = [
   {
     title: "设备名称",
@@ -7297,6 +7465,11 @@ const modalDeviceData = [
   ...deviceSelectionList,
 ].map((item, idx) => ({ ...item, id: idx + 1 }));
 
+/* Step-4 table always shows these 8 devices to match the stat counters */
+const deployDeviceData = deviceSelectionList
+  .slice(0, 8)
+  .map((item, idx) => ({ ...item, id: idx + 1 }));
+
 const confirmColumns = [
   {
     title: "设备名称",
@@ -7327,6 +7500,13 @@ function DeviceSelection({ deployMode = false }) {
   const [sidebarDevices, setSidebarDevices] = useState([]);
   const [confirmModalOpen, setConfirmModalOpen] = useState(false);
   const [confirmOnlineModalOpen, setConfirmOnlineModalOpen] = useState(false);
+  const [deployProgress, setDeployProgress] = useState(36);
+  const [deployCompleted, setDeployCompleted] = useState(false);
+
+  /* Reset row selection when switching sidebar tabs */
+  useEffect(() => {
+    setSelectedRowKeys([]);
+  }, [activeTab]);
 
   const rowSelection = {
     selectedRowKeys,
@@ -7337,6 +7517,251 @@ function DeviceSelection({ deployMode = false }) {
     selectedRowKeys: modalSelectedRowKeys,
     onChange: (keys) => setModalSelectedRowKeys(keys),
   };
+
+  /* Action column: file icon (deploy mode) + edit + delete */
+  const renderActions = () => (
+    <span className="ds-action-group">
+      {deployMode && (
+        <Icon
+          name="file-text"
+          size="0.875rem"
+          className="ds-action-icon"
+          title="查看"
+        />
+      )}
+      <Icon
+        name="pencil"
+        size="0.875rem"
+        className="ds-action-icon"
+        title="编辑"
+      />
+      <Icon
+        name="trash-2"
+        size="0.875rem"
+        className="ds-action-icon"
+        title="删除"
+      />
+    </span>
+  );
+
+  const deviceColumns = [
+    {
+      title: "操作",
+      dataIndex: "action",
+      key: "action",
+      width: 108,
+      render: renderActions,
+    },
+    {
+      title: "上线状态",
+      dataIndex: "onlineStatus",
+      key: "onlineStatus",
+      width: 96,
+      render: (text, record) => {
+        if (!deployMode) {
+          return <Tag>待上线</Tag>;
+        }
+        /* Rows flip to 已上线 one by one as progress grows */
+        if (record.id <= deploySuccessCount) {
+          return <Tag className="ds-tag-ok">已上线</Tag>;
+        }
+        return <Tag className="ds-tag-progress">上线中 (20%)</Tag>;
+      },
+    },
+    {
+      title: "设备名称",
+      dataIndex: "deviceName",
+      key: "deviceName",
+      width: 140,
+    },
+    {
+      title: "管理IPv4地址",
+      dataIndex: "mgmtIpv4",
+      key: "mgmtIpv4",
+      width: 130,
+    },
+    {
+      title: "设备角色",
+      dataIndex: "deviceRole",
+      key: "deviceRole",
+      width: 96,
+    },
+    {
+      title: "ZTP层级",
+      dataIndex: "ztpLevel",
+      key: "ztpLevel",
+      width: 88,
+    },
+    {
+      title: "VTEP IPv4",
+      dataIndex: "vtepIpv4",
+      key: "vtepIpv4",
+      width: 120,
+    },
+    {
+      title: "BGP Router ID",
+      dataIndex: "bgpRouterId",
+      key: "bgpRouterId",
+      width: 116,
+    },
+    {
+      title: "设备软件版本",
+      dataIndex: "softwareVersion",
+      key: "softwareVersion",
+      width: 110,
+    },
+  ];
+
+  const linkColumns = [
+    {
+      title: "操作",
+      dataIndex: "action",
+      key: "action",
+      width: 108,
+      render: renderActions,
+    },
+    {
+      title: "链路ID",
+      dataIndex: "linkId",
+      key: "linkId",
+      width: 90,
+    },
+    {
+      title: "源设备",
+      dataIndex: "srcDevice",
+      key: "srcDevice",
+      width: 100,
+    },
+    {
+      title: "源端口",
+      dataIndex: "srcPort",
+      key: "srcPort",
+      width: 110,
+    },
+    {
+      title: "目的设备",
+      dataIndex: "dstDevice",
+      key: "dstDevice",
+      width: 100,
+    },
+    {
+      title: "目的端口",
+      dataIndex: "dstPort",
+      key: "dstPort",
+      width: 110,
+    },
+    {
+      title: "链路类型",
+      dataIndex: "linkType",
+      key: "linkType",
+      width: 100,
+    },
+    {
+      title: "链路状态",
+      dataIndex: "linkStatus",
+      key: "linkStatus",
+      width: 90,
+      render: (text) => (
+        <Tag className={text === "Up" ? "ds-tag-ok" : "ds-tag-fail"}>
+          {text}
+        </Tag>
+      ),
+    },
+  ];
+
+  const interconnectColumns = [
+    {
+      title: "操作",
+      dataIndex: "action",
+      key: "action",
+      width: 108,
+      render: renderActions,
+    },
+    {
+      title: "源设备",
+      dataIndex: "srcDevice",
+      key: "srcDevice",
+      width: 100,
+    },
+    {
+      title: "目的设备",
+      dataIndex: "dstDevice",
+      key: "dstDevice",
+      width: 100,
+    },
+    {
+      title: "互联类型",
+      dataIndex: "connType",
+      key: "connType",
+      width: 90,
+    },
+    {
+      title: "本端IP地址",
+      dataIndex: "localIp",
+      key: "localIp",
+      width: 110,
+    },
+    {
+      title: "对端IP地址",
+      dataIndex: "remoteIp",
+      key: "remoteIp",
+      width: 110,
+    },
+    {
+      title: "互联状态",
+      dataIndex: "connStatus",
+      key: "connStatus",
+      width: 90,
+      render: (text) => (
+        <Tag
+          className={
+            text === "已建立"
+              ? "ds-tag-ok"
+              : text === "建立中"
+              ? "ds-tag-progress"
+              : "ds-tag-fail"
+          }
+        >
+          {text}
+        </Tag>
+      ),
+    },
+  ];
+
+  const sidebarColumns =
+    activeTab === "device"
+      ? deviceColumns
+      : activeTab === "link"
+      ? linkColumns
+      : interconnectColumns;
+
+  const sidebarDataSource =
+    activeTab === "device"
+      ? deployMode
+        ? deployDeviceData
+        : sidebarDevices
+      : activeTab === "link"
+      ? deviceLinkList
+      : deviceInterconnectList;
+
+  /* Rows already online, growing with the deployment progress (36% -> 100%) */
+  const deploySuccessCount = deployMode
+    ? Math.round((8 * (deployProgress - 36)) / 64)
+    : 0;
+
+  const sidebarScrollX =
+    activeTab === "device" ? 1036 : activeTab === "link" ? 840 : 740;
+
+  /* Pagination shows once the table carries data (deploy mode always does) */
+  const sidebarPagination =
+    deployMode || sidebarDataSource.length > 0
+      ? {
+          defaultPageSize: 10,
+          showSizeChanger: true,
+          showQuickJumper: { goButton: "跳转" },
+          showTotal: (total) => `总计：${total}`,
+        }
+      : false;
 
   /* Confirm: carry the checked rows (deduped by serial) into the sidebar table */
   const handleModalConfirm = () => {
@@ -7360,15 +7785,28 @@ function DeviceSelection({ deployMode = false }) {
   return (
     <div className="device-selection">
       <div className="ds-canvas">
-        <img
-          className="ds-canvas-bg"
-          src="./assets/uploads/background.jpg"
-          alt=""
-        />
+        {deployMode && deployCompleted ? (
+          <div className="ds-canvas-gradient" />
+        ) : (
+          <img
+            className="ds-canvas-bg"
+            src={
+              sidebarDevices.length > 0
+                ? "./assets/uploads/image.jpg"
+                : "./assets/uploads/background.jpg"
+            }
+            alt=""
+          />
+        )}
       </div>
       <aside className="ds-sidebar">
         <div className="ds-sidebar-title">设备选择</div>
-        {deployMode && <DeploymentStatus />}
+        {deployMode && (
+          <DeploymentStatus
+            onProgress={(p) => setDeployProgress(p)}
+            onComplete={() => setDeployCompleted(true)}
+          />
+        )}
         <Tabs
           items={deviceTabs}
           activeKey={activeTab}
@@ -7393,54 +7831,82 @@ function DeviceSelection({ deployMode = false }) {
             }
           />
           <div className="ds-toolbar-actions">
-            <Button size="small">删除</Button>
-            <Button size="small">清空</Button>
-            <Button type="primary" size="small" onClick={() => setAddModalOpen(true)}>
-              添加
-            </Button>
+            {deployMode ? (
+              <>
+                <Button size="small">NETCONF通道信息</Button>
+                <Button size="small">ZTP配置校验</Button>
+                <Button size="small">刷新</Button>
+              </>
+            ) : (
+              <>
+                <Button size="small">删除</Button>
+                <Button size="small">清空</Button>
+                <Button
+                  type="primary"
+                  size="small"
+                  onClick={() => setAddModalOpen(true)}
+                >
+                  添加
+                </Button>
+              </>
+            )}
           </div>
         </div>
         <div className="ds-table">
           <Table
-            columns={deviceColumns}
-            dataSource={sidebarDevices}
+            columns={sidebarColumns}
+            dataSource={sidebarDataSource}
             rowKey="id"
             rowSelection={rowSelection}
             size="large"
-            pagination={false}
-            scroll={{ x: 1008 }}
-            locale={{
-              emptyText: (
-                <div className="ds-empty">
-                  <img
-                    className="ds-empty-img"
-                    src="./assets/uploads/empty.svg"
-                    alt=""
-                  />
-                  <div className="ds-empty-text">
-                    暂无数据，请
-                    <a
-                      className="ds-empty-link"
-                      onClick={() => setAddModalOpen(true)}
-                    >
-                      添加
-                    </a>
-                  </div>
-                </div>
-              ),
-            }}
+            pagination={sidebarPagination}
+            scroll={{ x: sidebarScrollX }}
+            locale={
+              activeTab === "device"
+                ? {
+                    emptyText: (
+                      <div className="ds-empty">
+                        <img
+                          className="ds-empty-img"
+                          src="./assets/uploads/empty.svg"
+                          alt=""
+                        />
+                        <div className="ds-empty-text">
+                          暂无数据，请
+                          <a
+                            className="ds-empty-link"
+                            onClick={() => setAddModalOpen(true)}
+                          >
+                            添加
+                          </a>
+                        </div>
+                      </div>
+                    ),
+                  }
+                : undefined
+            }
           />
         </div>
         <div className="ds-sidebar-footer">
-          <Button size="small">删除</Button>
-          <Button
-            type="primary"
-            size="small"
-            disabled={sidebarDevices.length === 0}
-            onClick={() => setConfirmModalOpen(true)}
-          >
-            开始上线
-          </Button>
+          {deployMode ? (
+            deployCompleted ? (
+              <Button size="small">完成</Button>
+            ) : (
+              <Button size="small">结束任务</Button>
+            )
+          ) : (
+            <>
+              <Button size="small">删除</Button>
+              <Button
+                type="primary"
+                size="small"
+                disabled={sidebarDevices.length === 0}
+                onClick={() => setConfirmModalOpen(true)}
+              >
+                开始上线
+              </Button>
+            </>
+          )}
         </div>
       </aside>
 
@@ -7463,19 +7929,19 @@ function DeviceSelection({ deployMode = false }) {
         ]}
       >
         <div className="ds-modal-body">
-          <div className="ds-modal-toolbar">
-            <Tabs
-              items={deviceTabs}
-              activeKey={modalTab}
-              onChange={(k) => setModalTab(k)}
-              size="small"
-              className="ds-modal-tabs"
-            />
-            <a className="ds-modal-export">
-              <Icon name="download" size="0.875rem" />
-              导出
-            </a>
-          </div>
+          <Tabs
+            items={deviceTabs}
+            activeKey={modalTab}
+            onChange={(k) => setModalTab(k)}
+            size="small"
+            className="ds-modal-tabs"
+            tabBarExtraContent={
+              <a className="ds-modal-export">
+                <Icon name="download" size="0.875rem" />
+                导出
+              </a>
+            }
+          />
           <Input
             size="small"
             allowClear

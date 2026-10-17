@@ -56,6 +56,11 @@
   line-height: 1.2;
 }
 
+/* 100% turns green once the deployment completes */
+.dep-rate-value.completed {
+  color: var(--success);
+}
+
 .dep-rate-num {
   font-size: var(--font-size-2xl);
   font-weight: var(--font-weight-medium);

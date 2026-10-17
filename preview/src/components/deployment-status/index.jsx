@@ -103,7 +103,9 @@ export default function DeploymentStatus({ onProgress, onComplete }) {
       <div className="dep-panel">
         <div className="dep-panel-top">
           <div className="dep-rate">
-            <span className="dep-rate-value">
+            <span
+              className={"dep-rate-value" + (completed ? " completed" : "")}
+            >
               <span className="dep-rate-num">{progress}</span>
               <span className="dep-rate-unit">%</span>
             </span>

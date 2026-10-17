@@ -70,6 +70,7 @@
 
 .ip-pool-table {
   border: 1px solid var(--outline-variant);
+  border-left: none;
   border-radius: var(--radius-base);
   overflow: hidden;
 }

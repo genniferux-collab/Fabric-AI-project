@@ -20,6 +20,17 @@
   object-fit: cover;
 }
 
+/* Success backdrop once the deployment completes */
+.ds-canvas-gradient {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    var(--success-container),
+    var(--primary-container)
+  );
+}
+
 /* Fixed sidebar: 640px wide, pinned to the right edge */
 .ds-sidebar {
   flex: 0 0 640px;
@@ -94,9 +105,13 @@
   flex: 0 0 auto;
   min-height: 0;
   overflow: hidden;
-  /* 四边外边框，与规范表格一致（含左右外边框） */
-  border: 1px solid var(--outline-variant);
-  border-radius: var(--radius-base);
+  /* top rule only: no left/right/bottom borders */
+  border-top: 1px solid var(--outline-variant);
+}
+
+/* Tab content area: no bottom border under the last row */
+.ds-table .ant-table-tbody > tr:last-child > td {
+  border-bottom: none;
 }
 
 /* Spacing fully controlled by the custom empty block */
@@ -221,19 +236,9 @@
   font-weight: var(--font-weight-semibold);
 }
 
-/* Device-selection-list modal */
-.ds-modal-toolbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-}
-
-.ds-modal-tabs {
-  flex: 1 1 auto;
-  min-width: 0;
-}
-
+/* Device-selection-list modal: export action lives inside the tab bar
+   (tabBarExtraContent), so the tab underline passes beneath it and stays
+   on the same baseline as the tab labels */
 .ds-modal-export {
   display: inline-flex;
   align-items: center;
