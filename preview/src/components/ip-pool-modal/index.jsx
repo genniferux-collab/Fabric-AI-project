@@ -17,7 +17,6 @@ export default function IpPoolModal({ open, onClose, onConfirm, tabLabel }) {
   const [endIp, setEndIp] = useState("");
   const [mask, setMask] = useState("255.255.255.0");
 
-  // 弹窗每次打开时重置表单
   useEffect(() => {
     if (open) {
       setStartIp("");
@@ -31,7 +30,7 @@ export default function IpPoolModal({ open, onClose, onConfirm, tabLabel }) {
     onConfirm({ startIp, endIp, mask });
   };
 
-  const title = "添加" + (tabLabel ? tabLabel : "IP池");
+  const title = "添加" + (tabLabel || "IP池");
 
   return (
     <Modal
@@ -39,7 +38,7 @@ export default function IpPoolModal({ open, onClose, onConfirm, tabLabel }) {
       open={open}
       onCancel={onClose}
       centered
-      width={480}
+      width={520}
       destroyOnClose
       footer={[
         <Button key="cancel" onClick={onClose}>
@@ -50,31 +49,34 @@ export default function IpPoolModal({ open, onClose, onConfirm, tabLabel }) {
         </Button>,
       ]}
     >
-      <div className="modal-body-inner">
-        <div className="modal-form-row">
-          <label className="modal-form-label required">开始IP</label>
+      <div className="ip-modal-body">
+        <div className="ip-modal-desc">
+          请输入IP地址范围和子网掩码，添加到当前{tabLabel || "IP池"}中。
+        </div>
+        <div className="ip-modal-form-row">
+          <label className="ip-modal-label required">开始IP</label>
           <Input
-            className="modal-form-input"
-            placeholder="请输入开始IP地址"
+            className="ip-modal-input"
+            placeholder="例如：192.168.1.10"
             size="small"
             value={startIp}
             onChange={(e) => setStartIp(e.target.value)}
           />
         </div>
-        <div className="modal-form-row">
-          <label className="modal-form-label required">结束IP</label>
+        <div className="ip-modal-form-row">
+          <label className="ip-modal-label required">结束IP</label>
           <Input
-            className="modal-form-input"
-            placeholder="请输入结束IP地址"
+            className="ip-modal-input"
+            placeholder="例如：192.168.1.100"
             size="small"
             value={endIp}
             onChange={(e) => setEndIp(e.target.value)}
           />
         </div>
-        <div className="modal-form-row">
-          <label className="modal-form-label required">掩码</label>
+        <div className="ip-modal-form-row">
+          <label className="ip-modal-label required">掩码</label>
           <Select
-            className="modal-form-input"
+            className="ip-modal-input"
             options={maskOptions}
             size="small"
             value={mask}

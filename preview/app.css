@@ -120,6 +120,47 @@
   color: var(--interactive-link-hover);
 }
 
+/* ===== Segmented 滑动胶囊微动效 ===== */
+/* 去掉 item 自身背景，改由 group::after 伪元素做滑动 thumb */
+.ant-segmented-group {
+  position: relative;
+  --thumb-x: 0px;
+  --thumb-w: 0px;
+}
+.ant-segmented-item {
+  background: transparent !important;
+  position: relative;
+  z-index: 1;
+}
+/* 文字颜色过渡：与底色同步 160ms，选中白、未选中深灰 */
+.ant-segmented-item-label {
+  transition: color 160ms cubic-bezier(0.2, 0, 0, 1);
+  position: relative;
+  z-index: 2;
+}
+.ant-segmented-item-selected .ant-segmented-item-label {
+  color: var(--gray-0, #fff);
+}
+.ant-segmented-item:not(.ant-segmented-item-selected) .ant-segmented-item-label {
+  color: var(--gray-50, #777);
+}
+/* 滑动底色 thumb — JS 设置 --thumb-x / --thumb-w，transform 仅合成层不触发布局 */
+.ant-segmented-group::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: var(--thumb-w, 0px);
+  transform: translateX(var(--thumb-x, 0px));
+  background: var(--brand-50, #0067D1);
+  border-radius: var(--radius-base, 4px);
+  transition: transform 160ms cubic-bezier(0.2, 0, 0, 1);
+  will-change: transform;
+  z-index: 0;
+  pointer-events: none;
+}
+
 /* Fixed-width text buttons (88px) */
 .app-root .ant-btn:not(.ant-btn-icon-only),
 .ant-modal-footer .ant-btn {

@@ -4037,6 +4037,47 @@ input.ant-input.ant-input-sm {
   color: var(--interactive-link-hover);
 }
 
+/* ===== Segmented 滑动胶囊微动效 ===== */
+/* 去掉 item 自身背景，改由 group::after 伪元素做滑动 thumb */
+.ant-segmented-group {
+  position: relative;
+  --thumb-x: 0px;
+  --thumb-w: 0px;
+}
+.ant-segmented-item {
+  background: transparent !important;
+  position: relative;
+  z-index: 1;
+}
+/* 文字颜色过渡：与底色同步 160ms，选中白、未选中深灰 */
+.ant-segmented-item-label {
+  transition: color 160ms cubic-bezier(0.2, 0, 0, 1);
+  position: relative;
+  z-index: 2;
+}
+.ant-segmented-item-selected .ant-segmented-item-label {
+  color: var(--gray-0, #fff);
+}
+.ant-segmented-item:not(.ant-segmented-item-selected) .ant-segmented-item-label {
+  color: var(--gray-50, #777);
+}
+/* 滑动底色 thumb — JS 设置 --thumb-x / --thumb-w，transform 仅合成层不触发布局 */
+.ant-segmented-group::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: var(--thumb-w, 0px);
+  transform: translateX(var(--thumb-x, 0px));
+  background: var(--brand-50, #0067D1);
+  border-radius: var(--radius-base, 4px);
+  transition: transform 160ms cubic-bezier(0.2, 0, 0, 1);
+  will-change: transform;
+  z-index: 0;
+  pointer-events: none;
+}
+
 /* Fixed-width text buttons (88px) */
 .app-root .ant-btn:not(.ant-btn-icon-only),
 .ant-modal-footer .ant-btn {
@@ -4588,7 +4629,55 @@ input.ant-input.ant-input-sm {
 }
 
 
-/* IP池添加弹窗 — 复用 south-protocol-modal 的 .modal-form-* 全局样式，无额外覆盖 */
+/* IP池添加弹窗 — 自包含样式，遵循设计系统 token */
+
+.ip-modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding-top: 0.25rem;
+}
+
+/* 描述信息 */
+.ip-modal-desc {
+  font: var(--font-body-s);
+  color: var(--on-surface-variant);
+  line-height: 1.5;
+  padding: 0.5rem 0.75rem;
+  background: var(--surface-container-low);
+  border-radius: var(--radius-base);
+  border-left: 3px solid var(--primary);
+}
+
+/* 表单行 */
+.ip-modal-form-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* 标签：定宽 5rem + 左对齐 + 必填星号内联 */
+.ip-modal-label {
+  min-width: 5rem;
+  max-width: 5rem;
+  text-align: left;
+  flex-shrink: 0;
+  font: var(--font-body-s);
+  color: var(--on-surface-variant);
+}
+
+.ip-modal-label.required::before {
+  content: "*";
+  margin-right: 0.25rem;
+  color: var(--error);
+  font: var(--font-body-m);
+}
+
+/* 输入框：flex 填充 + 最大宽度限制 */
+.ip-modal-input {
+  flex: 1;
+  max-width: 20rem;
+}
 
 
 .region-config {
@@ -6588,7 +6677,6 @@ function IpPoolModal({ open, onClose, onConfirm, tabLabel }) {
   const [endIp, setEndIp] = useState("");
   const [mask, setMask] = useState("255.255.255.0");
 
-  // 弹窗每次打开时重置表单
   useEffect(() => {
     if (open) {
       setStartIp("");
@@ -6602,7 +6690,7 @@ function IpPoolModal({ open, onClose, onConfirm, tabLabel }) {
     onConfirm({ startIp, endIp, mask });
   };
 
-  const title = "添加" + (tabLabel ? tabLabel : "IP池");
+  const title = "添加" + (tabLabel || "IP池");
 
   return (
     <Modal
@@ -6610,7 +6698,7 @@ function IpPoolModal({ open, onClose, onConfirm, tabLabel }) {
       open={open}
       onCancel={onClose}
       centered
-      width={480}
+      width={520}
       destroyOnClose
       footer={[
         <Button key="cancel" onClick={onClose}>
@@ -6621,31 +6709,34 @@ function IpPoolModal({ open, onClose, onConfirm, tabLabel }) {
         </Button>,
       ]}
     >
-      <div className="modal-body-inner">
-        <div className="modal-form-row">
-          <label className="modal-form-label required">开始IP</label>
+      <div className="ip-modal-body">
+        <div className="ip-modal-desc">
+          请输入IP地址范围和子网掩码，添加到当前{tabLabel || "IP池"}中。
+        </div>
+        <div className="ip-modal-form-row">
+          <label className="ip-modal-label required">开始IP</label>
           <Input
-            className="modal-form-input"
-            placeholder="请输入开始IP地址"
+            className="ip-modal-input"
+            placeholder="例如：192.168.1.10"
             size="small"
             value={startIp}
             onChange={(e) => setStartIp(e.target.value)}
           />
         </div>
-        <div className="modal-form-row">
-          <label className="modal-form-label required">结束IP</label>
+        <div className="ip-modal-form-row">
+          <label className="ip-modal-label required">结束IP</label>
           <Input
-            className="modal-form-input"
-            placeholder="请输入结束IP地址"
+            className="ip-modal-input"
+            placeholder="例如：192.168.1.100"
             size="small"
             value={endIp}
             onChange={(e) => setEndIp(e.target.value)}
           />
         </div>
-        <div className="modal-form-row">
-          <label className="modal-form-label required">掩码</label>
+        <div className="ip-modal-form-row">
+          <label className="ip-modal-label required">掩码</label>
           <Select
-            className="modal-form-input"
+            className="ip-modal-input"
             options={maskOptions}
             size="small"
             value={mask}
@@ -6661,7 +6752,7 @@ function IpPoolModal({ open, onClose, onConfirm, tabLabel }) {
 
 /* ===== src/views/network-planning/index.jsx ===== */
 (function () {
-  const { useState, useEffect } = React;
+  const { useState, useEffect, useRef } = React;
   const { Segmented, InputNumber, Input, Select, Switch, Tabs, Table, Button, Tooltip, Empty } = antd;
   const { Icon, planningTypes, managementOptions, networkShapeOptions, ipPoolTabs, ipPoolDataMap } = __export;
   const InfoBanner = __export.InfoBanner;
@@ -6682,6 +6773,49 @@ function NetworkPlanning() {
   const [ipPoolModalOpen, setIpPoolModalOpen] = useState(false);
   // IP池数据（可动态添加），初始化自 mock
   const [ipPoolData, setIpPoolData] = useState(() => ({ ...ipPoolDataMap }));
+
+  // Segmented 滑动胶囊：预测量各 item 位置，onChange 时查表设 CSS 变量，避免运行时 getBoundingClientRect 卡顿
+  const segWrapRef = useRef(null);
+  const itemMetrics = useRef([]);
+  useEffect(() => {
+    const wrap = segWrapRef.current;
+    if (!wrap) return;
+    const group = wrap.querySelector(".ant-segmented-group");
+    if (!group) return;
+    const measure = () => {
+      const gr = group.getBoundingClientRect();
+      const items = group.querySelectorAll(".ant-segmented-item");
+      itemMetrics.current = Array.from(items).map((item) => {
+        const ir = item.getBoundingClientRect();
+        return { x: Math.round(ir.left - gr.left), w: Math.round(ir.width) };
+      });
+      const sel = group.querySelector(".ant-segmented-item-selected");
+      if (sel) {
+        const idx = Array.from(items).indexOf(sel);
+        const m = itemMetrics.current[idx];
+        if (m) {
+          group.style.setProperty("--thumb-x", m.x + "px");
+          group.style.setProperty("--thumb-w", m.w + "px");
+        }
+      }
+    };
+    measure();
+    window.addEventListener("resize", measure);
+    return () => window.removeEventListener("resize", measure);
+  }, []);
+  const setThumb = (value) => {
+    requestAnimationFrame(() => {
+      const group = segWrapRef.current?.querySelector(".ant-segmented-group");
+      if (!group) return;
+      const idx = planningTypes.findIndex((o) => o.value === value);
+      const m = itemMetrics.current[idx];
+      if (m) {
+        group.style.setProperty("--thumb-x", m.x + "px");
+        group.style.setProperty("--thumb-w", m.w + "px");
+      }
+    });
+  };
+
   // 渐进式展开：默认前两节（拓扑规划、IP规划）展开；填完当前节最后一项揭示下一节；每节可独立折叠/展开
   const [openKeys, setOpenKeys] = useState(["topo", "ip"]);
   const reveal = (key) =>
@@ -6740,12 +6874,14 @@ function NetworkPlanning() {
       >
         <div className="form-row">
           <label className="form-label required">拓扑规划</label>
-          <Segmented
-            options={planningTypes}
-            value={planningType}
-            onChange={(v) => setPlanningType(v)}
-            size="small"
-          />
+          <div ref={segWrapRef}>
+            <Segmented
+              options={planningTypes}
+              value={planningType}
+              onChange={(v) => { setPlanningType(v); setThumb(v); }}
+              size="small"
+            />
+          </div>
         </div>
 
         {isClassic ? (
