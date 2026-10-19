@@ -6795,33 +6795,28 @@ function IpPoolModal({ open, onClose, onConfirm, tabLabel }) {
   Object.assign(__export, { IpPoolModal });
 })();
 
-/* ===== src/views/network-planning/index.jsx ===== */
+/* ===== src/use-segmented-thumb.js ===== */
 (function () {
-  const { useState, useEffect, useRef } = React;
-  const { Segmented, InputNumber, Input, Select, Switch, Tabs, Table, Button, Tooltip, Empty } = antd;
-  const { Icon, planningTypes, managementOptions, networkShapeOptions, ipPoolTabs, ipPoolDataMap } = __export;
-  const InfoBanner = __export.InfoBanner;
-  const CollapseSection = __export.CollapseSection;
-  const DynamicInputRow = __export.DynamicInputRow;
-  const SouthProtocolModal = __export.SouthProtocolModal;
-  const IpPoolModal = __export.IpPoolModal;
-function NetworkPlanning() {
-  const [planningType, setPlanningType] = useState("classic");
-  const [spineCount, setSpineCount] = useState(2);
-  const [leafCount, setLeafCount] = useState(6);
-  const [ipPlanningOn, setIpPlanningOn] = useState(false);
-  const [activeIpTab, setActiveIpTab] = useState("interconnect");
-  const [modalOpen, setModalOpen] = useState(false);
-  const [southConfigured, setSouthConfigured] = useState(false);
-  const [selectedRowKeys, setSelectedRowKeys] = useState([]);
-  // IP池添加弹窗
-  const [ipPoolModalOpen, setIpPoolModalOpen] = useState(false);
-  // IP池数据（可动态添加），初始化自 mock
-  const [ipPoolData, setIpPoolData] = useState(() => ({ ...ipPoolDataMap }));
-
-  // Segmented 滑动胶囊：预测量各 item 位置，onChange 时查表设 CSS 变量，避免运行时 getBoundingClientRect 卡顿
+  const { useRef, useEffect, useCallback } = React;
+/**
+ * Segmented 滑动胶囊微动效（配合 app.css 中 .ant-segmented-group::after 的 thumb）：
+ * 预测量各 item 位置，onChange 时查表设置 --thumb-x / --thumb-w CSS 变量，
+ * 避免运行时 getBoundingClientRect 卡顿。
+ *
+ * 用法：
+ *   const { segWrapRef, setThumb } = useSegmentedThumb(options);
+ *   <div ref={segWrapRef}>
+ *     <Segmented
+ *       options={options}
+ *       value={value}
+ *       onChange={(v) => { setValue(v); setThumb(v); }}
+ *     />
+ *   </div>
+ */
+function useSegmentedThumb(options) {
   const segWrapRef = useRef(null);
   const itemMetrics = useRef([]);
+
   useEffect(() => {
     const wrap = segWrapRef.current;
     if (!wrap) return;
@@ -6848,18 +6843,56 @@ function NetworkPlanning() {
     window.addEventListener("resize", measure);
     return () => window.removeEventListener("resize", measure);
   }, []);
-  const setThumb = (value) => {
-    requestAnimationFrame(() => {
-      const group = segWrapRef.current?.querySelector(".ant-segmented-group");
-      if (!group) return;
-      const idx = planningTypes.findIndex((o) => o.value === value);
-      const m = itemMetrics.current[idx];
-      if (m) {
-        group.style.setProperty("--thumb-x", m.x + "px");
-        group.style.setProperty("--thumb-w", m.w + "px");
-      }
-    });
-  };
+
+  const setThumb = useCallback(
+    (value) => {
+      requestAnimationFrame(() => {
+        const group = segWrapRef.current?.querySelector(
+          ".ant-segmented-group"
+        );
+        if (!group) return;
+        const idx = options.findIndex((o) => o.value === value);
+        const m = itemMetrics.current[idx];
+        if (m) {
+          group.style.setProperty("--thumb-x", m.x + "px");
+          group.style.setProperty("--thumb-w", m.w + "px");
+        }
+      });
+    },
+    [options]
+  );
+
+  return { segWrapRef, setThumb };
+}
+  Object.assign(__export, { useSegmentedThumb });
+})();
+
+/* ===== src/views/network-planning/index.jsx ===== */
+(function () {
+  const { useState, useEffect } = React;
+  const { Segmented, InputNumber, Input, Select, Switch, Tabs, Table, Button, Tooltip, Empty } = antd;
+  const { Icon, useSegmentedThumb, planningTypes, managementOptions, networkShapeOptions, ipPoolTabs, ipPoolDataMap } = __export;
+  const InfoBanner = __export.InfoBanner;
+  const CollapseSection = __export.CollapseSection;
+  const DynamicInputRow = __export.DynamicInputRow;
+  const SouthProtocolModal = __export.SouthProtocolModal;
+  const IpPoolModal = __export.IpPoolModal;
+function NetworkPlanning() {
+  const [planningType, setPlanningType] = useState("classic");
+  const [spineCount, setSpineCount] = useState(2);
+  const [leafCount, setLeafCount] = useState(6);
+  const [ipPlanningOn, setIpPlanningOn] = useState(false);
+  const [activeIpTab, setActiveIpTab] = useState("interconnect");
+  const [modalOpen, setModalOpen] = useState(false);
+  const [southConfigured, setSouthConfigured] = useState(false);
+  const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+  // IP池添加弹窗
+  const [ipPoolModalOpen, setIpPoolModalOpen] = useState(false);
+  // IP池数据（可动态添加），初始化自 mock
+  const [ipPoolData, setIpPoolData] = useState(() => ({ ...ipPoolDataMap }));
+
+  // Segmented 滑动胶囊（共享 hook：预测量 + 查表设 CSS 变量）
+  const { segWrapRef, setThumb } = useSegmentedThumb(planningTypes);
 
   // 渐进式展开：默认前两节（拓扑规划、IP规划）展开；填完当前节最后一项揭示下一节；每节可独立折叠/展开
   const [openKeys, setOpenKeys] = useState(["topo", "ip"]);
@@ -7342,7 +7375,7 @@ function IpInput({ type = "ipv4", size = "middle", value, onChange, onFocus, onB
 (function () {
   const { useState } = React;
   const { Segmented, InputNumber, Input, Select, Switch } = antd;
-  const { fabricMgmtOptions, networkTypeOptions, underlayProtocolOptions } = __export;
+  const { useSegmentedThumb, fabricMgmtOptions, networkTypeOptions, underlayProtocolOptions } = __export;
   const InfoBanner = __export.InfoBanner;
   const CollapseSection = __export.CollapseSection;
   const IpInput = __export.IpInput;
@@ -7352,6 +7385,9 @@ function RegionConfig() {
   const [dhcpOn, setDhcpOn] = useState(true);
   const [syslogOn, setSyslogOn] = useState(false);
   const [stelnetOn, setStelnetOn] = useState(false);
+
+  // Segmented 滑动胶囊（共享 hook：预测量 + 查表设 CSS 变量）
+  const { segWrapRef, setThumb } = useSegmentedThumb(fabricMgmtOptions);
 
   return (
     <div className="region-config">
@@ -7364,12 +7400,17 @@ function RegionConfig() {
       <CollapseSection title="基础配置" className="section-basic">
         <div className="form-row">
           <label className="form-label required">Fabric管理</label>
-          <Segmented
-            options={fabricMgmtOptions}
-            value={fabricMgmt}
-            onChange={(v) => setFabricMgmt(v)}
-            size="small"
-          />
+          <div ref={segWrapRef}>
+            <Segmented
+              options={fabricMgmtOptions}
+              value={fabricMgmt}
+              onChange={(v) => {
+                setFabricMgmt(v);
+                setThumb(v);
+              }}
+              size="small"
+            />
+          </div>
         </div>
 
         <div className="form-subsection">

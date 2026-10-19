@@ -9,6 +9,7 @@ import {
 import InfoBanner from "../../components/info-banner/index.jsx";
 import CollapseSection from "../../components/collapse-section/index.jsx";
 import IpInput from "../../../assets/shared/ip-input.jsx";
+import { useSegmentedThumb } from "../../use-segmented-thumb.js";
 import {
   fabricMgmtOptions,
   networkTypeOptions,
@@ -23,6 +24,9 @@ export default function RegionConfig() {
   const [syslogOn, setSyslogOn] = useState(false);
   const [stelnetOn, setStelnetOn] = useState(false);
 
+  // Segmented 滑动胶囊（共享 hook：预测量 + 查表设 CSS 变量）
+  const { segWrapRef, setThumb } = useSegmentedThumb(fabricMgmtOptions);
+
   return (
     <div className="region-config">
       <div className="rc-banner-area">
@@ -34,12 +38,17 @@ export default function RegionConfig() {
       <CollapseSection title="基础配置" className="section-basic">
         <div className="form-row">
           <label className="form-label required">Fabric管理</label>
-          <Segmented
-            options={fabricMgmtOptions}
-            value={fabricMgmt}
-            onChange={(v) => setFabricMgmt(v)}
-            size="small"
-          />
+          <div ref={segWrapRef}>
+            <Segmented
+              options={fabricMgmtOptions}
+              value={fabricMgmt}
+              onChange={(v) => {
+                setFabricMgmt(v);
+                setThumb(v);
+              }}
+              size="small"
+            />
+          </div>
         </div>
 
         <div className="form-subsection">

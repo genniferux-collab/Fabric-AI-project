@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import {
   Segmented,
   InputNumber,
@@ -17,6 +17,7 @@ import CollapseSection from "../../components/collapse-section/index.jsx";
 import DynamicInputRow from "../../components/dynamic-input-row/index.jsx";
 import SouthProtocolModal from "../../components/south-protocol-modal/index.jsx";
 import IpPoolModal from "../../components/ip-pool-modal/index.jsx";
+import { useSegmentedThumb } from "../../use-segmented-thumb.js";
 import {
   planningTypes,
   managementOptions,
@@ -40,47 +41,8 @@ export default function NetworkPlanning() {
   // IP池数据（可动态添加），初始化自 mock
   const [ipPoolData, setIpPoolData] = useState(() => ({ ...ipPoolDataMap }));
 
-  // Segmented 滑动胶囊：预测量各 item 位置，onChange 时查表设 CSS 变量，避免运行时 getBoundingClientRect 卡顿
-  const segWrapRef = useRef(null);
-  const itemMetrics = useRef([]);
-  useEffect(() => {
-    const wrap = segWrapRef.current;
-    if (!wrap) return;
-    const group = wrap.querySelector(".ant-segmented-group");
-    if (!group) return;
-    const measure = () => {
-      const gr = group.getBoundingClientRect();
-      const items = group.querySelectorAll(".ant-segmented-item");
-      itemMetrics.current = Array.from(items).map((item) => {
-        const ir = item.getBoundingClientRect();
-        return { x: Math.round(ir.left - gr.left), w: Math.round(ir.width) };
-      });
-      const sel = group.querySelector(".ant-segmented-item-selected");
-      if (sel) {
-        const idx = Array.from(items).indexOf(sel);
-        const m = itemMetrics.current[idx];
-        if (m) {
-          group.style.setProperty("--thumb-x", m.x + "px");
-          group.style.setProperty("--thumb-w", m.w + "px");
-        }
-      }
-    };
-    measure();
-    window.addEventListener("resize", measure);
-    return () => window.removeEventListener("resize", measure);
-  }, []);
-  const setThumb = (value) => {
-    requestAnimationFrame(() => {
-      const group = segWrapRef.current?.querySelector(".ant-segmented-group");
-      if (!group) return;
-      const idx = planningTypes.findIndex((o) => o.value === value);
-      const m = itemMetrics.current[idx];
-      if (m) {
-        group.style.setProperty("--thumb-x", m.x + "px");
-        group.style.setProperty("--thumb-w", m.w + "px");
-      }
-    });
-  };
+  // Segmented 滑动胶囊（共享 hook：预测量 + 查表设 CSS 变量）
+  const { segWrapRef, setThumb } = useSegmentedThumb(planningTypes);
 
   // 渐进式展开：默认前两节（拓扑规划、IP规划）展开；填完当前节最后一项揭示下一节；每节可独立折叠/展开
   const [openKeys, setOpenKeys] = useState(["topo", "ip"]);
