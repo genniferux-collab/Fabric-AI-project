@@ -20,17 +20,6 @@
   object-fit: cover;
 }
 
-/* Success backdrop once the deployment completes */
-.ds-canvas-gradient {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    135deg,
-    var(--success-container),
-    var(--primary-container)
-  );
-}
-
 /* Fixed sidebar: 640px wide, pinned to the right edge */
 .ds-sidebar {
   flex: 0 0 640px;

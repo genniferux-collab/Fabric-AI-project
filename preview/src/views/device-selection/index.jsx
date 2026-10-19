@@ -427,19 +427,19 @@ export default function DeviceSelection({ deployMode = false }) {
   return (
     <div className="device-selection">
       <div className="ds-canvas">
-        {deployMode && deployCompleted ? (
-          <div className="ds-canvas-gradient" />
-        ) : (
-          <img
-            className="ds-canvas-bg"
-            src={
-              sidebarDevices.length > 0
-                ? "./assets/uploads/bg-two.png"
-                : "./assets/uploads/bg-one.png"
-            }
-            alt=""
-          />
-        )}
+        <img
+          className="ds-canvas-bg"
+          src={
+            deployMode
+              ? deployCompleted
+                ? "./assets/uploads/bg-four.png"
+                : "./assets/uploads/bg-three.png"
+              : sidebarDevices.length > 0
+              ? "./assets/uploads/bg-two.png"
+              : "./assets/uploads/bg-one.png"
+          }
+          alt=""
+        />
       </div>
       <aside className="ds-sidebar">
         <div className="ds-sidebar-title">设备选择</div>

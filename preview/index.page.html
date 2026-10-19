@@ -2760,7 +2760,7 @@ input.ant-input.ant-input-sm {
   color: var(--color-link);
 }
 .ant-steps .ant-steps-item.ant-steps-item-process .ant-steps-item-container .ant-steps-item-content .ant-steps-item-title::after {
-  background-color: var(--color-border);
+  background-color: var(--color-border-separator);
 }
 .ant-steps .ant-steps-item.ant-steps-item-process .ant-steps-item-container .ant-steps-item-tail::after {
   background-color: var(--color-border-separator);
@@ -2777,7 +2777,7 @@ input.ant-input.ant-input-sm {
   color: var(--color-text-secondary);
 }
 .ant-steps .ant-steps-item.ant-steps-item-wait .ant-steps-item-container .ant-steps-item-content .ant-steps-item-title::after {
-  background-color: var(--color-border);
+  background-color: var(--color-border-separator);
 }
 .ant-steps .ant-steps-item.ant-steps-item-wait .ant-steps-item-container .ant-steps-item-content .ant-steps-item-description {
   color: var(--color-text-secondary);
@@ -2796,9 +2796,6 @@ input.ant-input.ant-input-sm {
   border-color: var(--color-border-focus);
   background-color: var(--color-info-primary-subtler);
   color: var(--color-border-focus);
-}
-.ant-steps .ant-steps-item.ant-steps-item-finish .ant-steps-item-container .ant-steps-item-content .ant-steps-item-title::after {
-  background-color: var(--color-brand);
 }
 .ant-steps .ant-steps-item .ant-steps-item-description {
   font-size: var(--font-size-md);
@@ -3085,8 +3082,9 @@ input.ant-input.ant-input-sm {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  height: calc(2rem - 2px);
+  height: 2rem;
   padding: 0 0.75rem;
+  box-sizing: border-box;
   cursor: pointer;
   user-select: none;
   white-space: nowrap;
@@ -3287,14 +3285,22 @@ input.ant-input.ant-input-sm {
   gap: 0.25rem;
   color: var(--color-text-secondary);
   border-radius: var(--radius-md);
-  /* 滑块（切换动效中滑动的元素）默认是 antd 的白色 itemSelectedBg，
-       改为与选中项一致的背景/圆角，滑动结束与 item-selected 无缝衔接 */
+  /* 点击的选项当帧立即呈现选中样式（radio 的 checked 与点击同步更新，
+       不必等动效链结束才落地的 item-selected 类，配合完全无动效方案） */
+  /* 完全无动效之滑块处理：
+       1) 过渡压到 0.01ms —— rc-motion 依赖滑块的 transitionend 结束动效并应用选中类，
+          不能用 display:none / transition:none（会卡死内部状态，选中类永不落地）；
+       2) 滑块隐形（透明背景、无阴影）—— 残余 2~4 帧里 antd 白色滑块会透过旧选项闪现 */
 }
 .ant-segmented .ant-segmented-group .ant-segmented-item-label {
   padding: 0 1rem;
   font-size: var(--font-size-md);
   line-height: 1.75rem;
   min-height: initial;
+}
+.ant-segmented .ant-segmented-group .ant-segmented-item {
+  /* 完全无动效：失去选中时颜色/背景瞬时切换（antd 默认 color 有 0.2s 渐变） */
+  transition: none;
 }
 .ant-segmented .ant-segmented-group .ant-segmented-item:not(.ant-segmented-item-disabled):hover {
   color: var(--gray-90);
@@ -3304,6 +3310,8 @@ input.ant-input.ant-input-sm {
   color: var(--gray-20);
 }
 .ant-segmented .ant-segmented-group .ant-segmented-item-selected {
+  /* 选中类由动效链结束后落地（约 1 帧）；选中视觉由下方 :has(:checked) 当帧渲染，
+       此规则保证类落地后样式一致，并提供禁用-选中变体（transition 已由基础项覆盖） */
   color: var(--gray-0);
   background: var(--brand-50);
   border-radius: var(--radius-base);
@@ -3316,9 +3324,25 @@ input.ant-input.ant-input-sm {
   color: var(--gray-0);
   background: var(--brand-20);
 }
-.ant-segmented .ant-segmented-group .ant-segmented-thumb {
+.ant-segmented .ant-segmented-group .ant-segmented-item:has(.ant-segmented-item-input:checked) {
+  color: var(--gray-0);
   background: var(--brand-50);
   border-radius: var(--radius-base);
+}
+.ant-segmented .ant-segmented-group .ant-segmented-item:has(.ant-segmented-item-input:checked):not(.ant-segmented-item-disabled):hover {
+  color: var(--gray-0);
+  background: var(--brand-40);
+}
+.ant-segmented .ant-segmented-group .ant-segmented-item:has(.ant-segmented-item-input:checked).ant-segmented-item-disabled {
+  color: var(--gray-0);
+  background: var(--brand-20);
+}
+.ant-segmented .ant-segmented-group .ant-segmented-thumb,
+.ant-segmented .ant-segmented-group .ant-segmented-thumb-motion-appear-active {
+  transition-duration: 0.01ms !important;
+  transition-delay: 0ms !important;
+  background: transparent !important;
+  box-shadow: none !important;
 }
 .ant-segmented.ant-segmented-lg .ant-segmented-item-label {
   font-size: var(--font-size-md);
@@ -3327,6 +3351,9 @@ input.ant-input.ant-input-sm {
 .ant-segmented.ant-segmented-sm .ant-segmented-item-label {
   font-size: var(--font-size-base);
   line-height: 1.5rem;
+}
+.dark .ant-segmented-group {
+  /* 点击的选项当帧立即呈现选中样式（同浅色段说明），图标颜色同步 */
 }
 .dark .ant-segmented-group .ant-segmented-item .ant-segmented-item-icon {
   color: var(--gray-30);
@@ -3359,6 +3386,27 @@ input.ant-input.ant-input-sm {
   background: var(--brand-70);
 }
 .dark .ant-segmented-group .ant-segmented-item-selected.ant-segmented-item-disabled .ant-segmented-item-icon {
+  color: var(--color-text-inverse-disabled);
+}
+.dark .ant-segmented-group .ant-segmented-item:has(.ant-segmented-item-input:checked) {
+  color: var(--gray-0);
+  background: var(--brand-50);
+}
+.dark .ant-segmented-group .ant-segmented-item:has(.ant-segmented-item-input:checked) .ant-segmented-item-icon {
+  color: var(--gray-0);
+}
+.dark .ant-segmented-group .ant-segmented-item:has(.ant-segmented-item-input:checked):not(.ant-segmented-item-disabled):hover {
+  color: var(--gray-0);
+  background: var(--brand-40);
+}
+.dark .ant-segmented-group .ant-segmented-item:has(.ant-segmented-item-input:checked):not(.ant-segmented-item-disabled):hover .ant-segmented-item-icon {
+  color: var(--gray-0);
+}
+.dark .ant-segmented-group .ant-segmented-item:has(.ant-segmented-item-input:checked).ant-segmented-item-disabled {
+  color: var(--color-text-inverse-disabled);
+  background: var(--brand-70);
+}
+.dark .ant-segmented-group .ant-segmented-item:has(.ant-segmented-item-input:checked).ant-segmented-item-disabled .ant-segmented-item-icon {
   color: var(--color-text-inverse-disabled);
 }
 
@@ -3472,6 +3520,9 @@ input.ant-input.ant-input-sm {
 .ant-modal .ant-modal-body .ant-typography.ant-typography-secondary,
 .ant-modal .ant-modal-body .ant-typography.ant-typography-link.ant-typography-secondary {
   color: var(--gray-90);
+}
+.ant-modal .ant-modal-close {
+  color: var(--color-text-primary);
 }
 .ant-btn.ant-btn-color-default {
   border-radius: var(--radius-base);
@@ -4725,17 +4776,6 @@ input.ant-input.ant-input-sm {
   object-fit: cover;
 }
 
-/* Success backdrop once the deployment completes */
-.ds-canvas-gradient {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    135deg,
-    var(--success-container),
-    var(--primary-container)
-  );
-}
-
 /* Fixed sidebar: 640px wide, pinned to the right edge */
 .ds-sidebar {
   flex: 0 0 640px;
@@ -5751,6 +5791,7 @@ function Icon({
   variant = "lined",
   onClick,
   title,
+  id,
 }) {
   const resolvedSize = resolveSize(size);
   const mergedStyle = onClick ? { cursor: "pointer", ...style } : style;
@@ -5824,6 +5865,7 @@ function Icon({
   if (src) {
     return React.createElement("img", {
       src: src,
+      id,
       width: resolvedSize,
       height: resolvedSize,
       className: className,
@@ -5855,6 +5897,7 @@ function Icon({
         strokeLinejoin: "round",
         className: className,
         "aria-hidden": true,
+        id,
         onClick,
         title,
         style: { ...mergedStyle, stroke: color || "currentColor" },
@@ -5869,6 +5912,7 @@ function Icon({
   if (!svg) {
     return React.createElement("span", {
       ref: wrapRef,
+      id,
       className,
       "aria-hidden": true,
       onClick,
@@ -5879,6 +5923,7 @@ function Icon({
 
   return React.createElement("span", {
     ref: wrapRef,
+    id,
     className,
     "aria-hidden": true,
     onClick,
@@ -7158,6 +7203,13 @@ const MODES = {
   mac: { sep: "-", count: 6, maxLen: 2, filter: (s) => s.replace(/[^0-9a-fA-F]/g, "").toUpperCase() },
 };
 
+// size 刻度对齐设计系统 Input/Button/InputNumber：large=2.5rem/16px，middle=2rem/14px，small=1.75rem/12px
+const SIZES = {
+  large: { height: "2.5rem", padding: "0 0.75rem", gap: "0.375rem", font: "var(--font-body-l)", dot: "0.25rem" },
+  middle: { height: "2rem", padding: "0 0.75rem", gap: "0.25rem", font: "var(--font-body-m)", dot: "0.1875rem" },
+  small: { height: "1.75rem", padding: "0 0.75rem", gap: "0.1875rem", font: "var(--font-body-s)", dot: "0.125rem" },
+};
+
 function segmentsFromValue(value, cfg) {
   const parts = String(value ?? "").split(cfg.sep);
   const segs = [];
@@ -7165,8 +7217,9 @@ function segmentsFromValue(value, cfg) {
   return segs;
 }
 
-function IpInput({ type = "ipv4", value, onChange, onFocus, onBlur, status, disabled, id, className = "", style }) {
+function IpInput({ type = "ipv4", size = "middle", value, onChange, onFocus, onBlur, status, disabled, id, className = "", style }) {
   const cfg = MODES[type] || MODES.ipv4;
+  const sz = SIZES[size] || SIZES.middle;
   const [segs, setSegs] = useState(() => segmentsFromValue(value, cfg));
   const [focused, setFocused] = useState(false);
 
@@ -7202,7 +7255,7 @@ function IpInput({ type = "ipv4", value, onChange, onFocus, onBlur, status, disa
     return next.join(cfg.sep);
   }
 
-  const borderColor = status === "error" ? "var(--color-error)" : focused ? "var(--color-brand)" : "var(--gray-20)";
+  const borderColor = status === "error" ? "var(--color-error)" : focused ? "var(--color-border-focus)" : "var(--gray-20)";
 
   const children = [];
   for (let i = 0; i < cfg.count; i++) {
@@ -7226,7 +7279,7 @@ function IpInput({ type = "ipv4", value, onChange, onFocus, onBlur, status, disa
           padding: 0,
           textAlign: "center",
           color: "var(--color-text-primary)",
-          font: "var(--font-body-m)",
+          font: sz.font,
         },
       })
     );
@@ -7236,8 +7289,8 @@ function IpInput({ type = "ipv4", value, onChange, onFocus, onBlur, status, disa
           ? React.createElement("span", {
               key: `sep-${i}`,
               style: {
-                width: "0.1875rem",
-                height: "0.1875rem",
+                width: sz.dot,
+                height: sz.dot,
                 borderRadius: "50%",
                 background: "var(--color-text-secondary)",
                 flexShrink: 0,
@@ -7247,7 +7300,7 @@ function IpInput({ type = "ipv4", value, onChange, onFocus, onBlur, status, disa
               "span",
               {
                 key: `sep-${i}`,
-                style: { color: "var(--color-text-secondary)", userSelect: "none", font: "var(--font-body-m)" },
+                style: { color: "var(--color-text-secondary)", userSelect: "none", font: sz.font },
               },
               cfg.sep
             )
@@ -7267,12 +7320,13 @@ function IpInput({ type = "ipv4", value, onChange, onFocus, onBlur, status, disa
       style: {
         display: "inline-flex",
         alignItems: "center",
-        gap: "0.25rem",
-        height: "2rem",
-        padding: "0 0.5rem",
+        gap: sz.gap,
+        height: sz.height,
+        padding: sz.padding,
         border: `1px solid ${borderColor}`,
         borderRadius: "4px",
-        background: disabled ? "var(--gray-05)" : "var(--color-bg-2)",
+        boxShadow: focused ? "0 0 0 1px var(--color-brand-disabled)" : "none",
+        background: disabled ? "var(--color-fill-disabled-subtle)" : "transparent",
         opacity: disabled ? 0.6 : 1,
         cursor: disabled ? "not-allowed" : "text",
         ...style,
@@ -8052,19 +8106,19 @@ function DeviceSelection({ deployMode = false }) {
   return (
     <div className="device-selection">
       <div className="ds-canvas">
-        {deployMode && deployCompleted ? (
-          <div className="ds-canvas-gradient" />
-        ) : (
-          <img
-            className="ds-canvas-bg"
-            src={
-              sidebarDevices.length > 0
-                ? "./assets/uploads/bg-two.png"
-                : "./assets/uploads/bg-one.png"
-            }
-            alt=""
-          />
-        )}
+        <img
+          className="ds-canvas-bg"
+          src={
+            deployMode
+              ? deployCompleted
+                ? "./assets/uploads/bg-four.png"
+                : "./assets/uploads/bg-three.png"
+              : sidebarDevices.length > 0
+              ? "./assets/uploads/bg-two.png"
+              : "./assets/uploads/bg-one.png"
+          }
+          alt=""
+        />
       </div>
       <aside className="ds-sidebar">
         <div className="ds-sidebar-title">设备选择</div>
